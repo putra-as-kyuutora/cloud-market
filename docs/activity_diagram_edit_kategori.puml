@@ -1,0 +1,49 @@
+@startuml Edit_Kategori
+title Edit Kategori (Admin)
+
+|Aktor|
+start
+:Klik tombol Edit
+pada kategori;
+
+|Sistem|
+:Redirect ke
+/admin/kategori/{id}/edit;
+:Ambil data kategori dan
+tampilkan form pre-filled;
+
+|Aktor|
+repeat
+  :Mengubah nama kategori
+  (misal: "Elektronik & Gadget");
+  
+  |Sistem|
+  :Validasi nama;
+  
+  if (Valid?) is (tidak) then
+    if (Kosong?) then (ya)
+      :Tampilkan error
+      "Nama wajib diisi";
+    else if (Terlalu panjang) then (ya)
+      :Tampilkan error
+      "Maksimal 100 karakter";
+    else (Duplikat dengan lain)
+      :Tampilkan error
+      "Nama sudah digunakan
+      kategori lain";
+    endif
+  endif
+repeat while (Valid?) is (tidak) not (ya)
+
+|Aktor|
+:Menekan tombol
+Simpan Perubahan;
+
+|Sistem|
+:Perbarui nama kategori
+di database;
+:Tampilkan notifikasi
+"Kategori berhasil diperbarui";
+stop
+
+@enduml

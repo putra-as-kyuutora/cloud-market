@@ -1,0 +1,78 @@
+@startuml Verifikasi_Penjual_Admin
+title Verifikasi Penjual (Admin)
+
+|Aktor|
+start
+:Membuka daftar pengajuan
+verifikasi penjual;
+
+|Sistem|
+:Menampilkan list pengajuan
+dengan status 'pending';
+
+|Aktor|
+:Memilih pengajuan dan
+klik Review;
+
+|Sistem|
+:Menampilkan detail pengajuan:
+- Info calon penjual
+- NIK KTP
+- Foto KTP (besar)
+- Foto Selfie KTP (besar);
+
+|Aktor|
+:Memeriksa dokumen KYC
+(keaslian KTP, NIK,
+kesesuaian wajah);
+
+if (Dokumen valid?) then (Tidak)
+  |Aktor|
+  repeat
+    :Mengisi alasan penolakan;
+    
+    |Sistem|
+    :Sistem validasi alasan
+    (min 10 karakter);
+    
+    if (Valid?) is (tidak) then
+      :Tampilkan error
+      "Alasan harus jelas";
+    endif
+  repeat while (Valid?) is (tidak) not (ya)
+  
+  |Aktor|
+  :Klik tombol Reject;
+  
+  |Sistem|
+  :Simpan status verifikasi 'rejected'
+  beserta alasan penolakan
+  dan ID admin yang reject;
+  :Menampilkan notifikasi
+  "Pengajuan ditolak";
+else (Ya)
+  |Aktor|
+  :Klik tombol Approve;
+  
+  |Sistem|
+  :Menampilkan dialog
+  konfirmasi;
+  
+  |Aktor|
+  :Klik Ya, Approve;
+  
+  |Sistem|
+  :BEGIN TRANSACTION;
+  :Set status verifikasi 'approved'
+  dan catat admin yang approve;
+  :Aktifkan flag is_seller
+  pada akun user;
+  :COMMIT;
+  :Menampilkan notifikasi
+  "Pengajuan approved.
+  Akun penjual aktif";
+endif
+
+stop
+
+@enduml

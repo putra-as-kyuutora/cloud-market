@@ -1,0 +1,54 @@
+@startuml Sequence_Daftar_Penjual
+title Sequence Diagram - Daftar Sebagai Penjual (KYC)
+
+actor "User" as User
+boundary "Halaman Buka Toko" as GUI
+control "BukaTokoController" as Controller
+entity "Tabel seller_profiles" as DB
+
+User -> GUI: 1. Mengisi nama toko dan deskripsi toko
+activate GUI
+User -> GUI: 2. Mengisi NIK KTP (16 digit)
+User -> GUI: 3. Upload foto KTP
+User -> GUI: 4. Upload foto selfie dengan KTP
+User -> GUI: 5. Menekan tombol Kirim Verifikasi
+
+GUI -> Controller: 6. Mengirim data KYC ke controller
+activate Controller
+
+Controller -> Controller: 7. Validasi format NIK (16 digit)
+Controller -> Controller: 8. Validasi file foto (format, ukuran)
+
+Controller -> Controller: 9. Simpan file foto ke /uploads/kyc/
+
+Controller -> DB: 10. Simpan data ke seller_profiles\ndengan status 'pending'
+activate DB
+DB --> Controller: 11. Data berhasil disimpan
+deactivate DB
+
+Controller --> GUI: 12. Pengajuan berhasil
+deactivate Controller
+GUI --> User: 13. Tampilkan notifikasi\n"Menunggu verifikasi admin"
+deactivate GUI
+
+alt NIK tidak valid
+    User -> GUI: 1a. Mengisi NIK dengan format salah
+    User -> GUI: 2a. Menekan tombol Kirim Verifikasi
+    GUI -> Controller: 3a. Mengirim data ke controller
+    activate Controller
+    Controller -> Controller: 4a. Validasi NIK dan menemukan error
+    Controller --> GUI: 5a. NIK tidak valid
+    deactivate Controller
+    GUI --> User: 6a. Menampilkan pesan "NIK harus 16 digit angka"
+else File foto tidak valid
+    User -> GUI: 1b. Upload foto dengan format/ukuran salah
+    User -> GUI: 2b. Menekan tombol Kirim Verifikasi
+    GUI -> Controller: 3b. Mengirim data ke controller
+    activate Controller
+    Controller -> Controller: 4b. Validasi file dan menemukan error
+    Controller --> GUI: 5b. File tidak valid
+    deactivate Controller
+    GUI --> User: 6b. Menampilkan pesan "File tidak valid"
+end
+
+@enduml

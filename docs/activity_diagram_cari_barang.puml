@@ -1,0 +1,60 @@
+@startuml Cari_Barang
+title Cari Barang (Pembeli)
+
+|Aktor|
+start
+:Mengakses halaman
+Cari Barang;
+
+|Sistem|
+:Menampilkan halaman
+dengan form pencarian
+dan filter;
+
+|Aktor|
+if (Gunakan filter?) then (Ya)
+  :Mengisi keyword pencarian
+  dan/atau memilih filter:
+  - Kategori
+  - Range harga
+  - Urutan (Terbaru/Termurah);
+else (Tidak)
+  :Hanya melihat semua barang;
+endif
+
+|Aktor|
+:Menekan tombol Cari
+atau Enter;
+
+|Sistem|
+:Build query pencarian
+dengan filter yang dipilih;
+
+:Execute query ke database;
+
+if (Ada hasil?) then (tidak)
+  :Tampilkan empty state
+  "Tidak ada barang yang sesuai.
+  Coba kata kunci lain";
+else (ya)
+  :Tampilkan grid barang dengan:
+  - Foto
+  - Nama barang
+  - Harga
+  - Nama toko
+  - Badge kategori;
+  :Pagination jika > 20;
+  
+  |Aktor|
+  if (Pilih barang?) then (ya)
+    |Sistem|
+    :Redirect ke
+    /barang/{id}
+    (detail barang);
+  else (tidak)
+  endif
+endif
+
+stop
+
+@enduml

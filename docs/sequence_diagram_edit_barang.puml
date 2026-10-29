@@ -1,0 +1,70 @@
+@startuml Sequence_Edit_Barang
+title Sequence Diagram - Edit Barang (Penjual)
+
+actor "Penjual" as Penjual
+boundary "Halaman Edit Barang" as GUI
+control "EditBarangController" as Controller
+entity "Tabel Barang" as DB
+
+Penjual -> GUI: 1. Klik tombol Edit pada barang
+activate GUI
+GUI -> Controller: 2. Request data barang
+activate Controller
+
+Controller -> DB: 3. Ambil data barang dari database
+activate DB
+DB --> Controller: 4. Data barang ditemukan
+deactivate DB
+
+Controller -> Controller: 5. Verifikasi ownership (barang milik penjual ini)
+
+Controller --> GUI: 6. Kirim data barang
+deactivate Controller
+GUI --> Penjual: 7. Tampilkan form edit (pre-filled)
+deactivate GUI
+
+Penjual -> GUI: 8. Mengubah data barang\n(nama, harga, stok, kategori, deskripsi)
+activate GUI
+Penjual -> GUI: 9. Upload foto baru (opsional)
+Penjual -> GUI: 10. Menekan tombol Simpan Perubahan
+GUI -> Controller: 11. Mengirim data yang diubah
+activate Controller
+
+Controller -> Controller: 12. Validasi data baru
+Controller -> Controller: 13. Validasi file foto (jika diganti)
+
+Controller -> Controller: 14. Hapus foto lama dan simpan foto baru\n(jika diganti)
+
+Controller -> DB: 15. Simpan perubahan data barang ke database
+activate DB
+DB --> Controller: 16. Data berhasil diperbarui
+deactivate DB
+
+Controller --> GUI: 17. Update berhasil
+deactivate Controller
+GUI --> Penjual: 18. Tampilkan notifikasi\n"Barang berhasil diperbarui"
+deactivate GUI
+
+alt Barang tidak ditemukan atau bukan milik penjual
+    Penjual -> GUI: 1a. Akses edit barang milik orang lain
+    GUI -> Controller: 2a. Request data barang
+    activate Controller
+    Controller -> DB: 3a. Cek data barang dan ownership
+    activate DB
+    DB --> Controller: 4a. Barang tidak ditemukan atau bukan milik penjual
+    deactivate DB
+    Controller --> GUI: 5a. Error 404
+    deactivate Controller
+    GUI --> Penjual: 6a. Tampilkan pesan "Barang tidak ditemukan"
+else Data tidak valid
+    Penjual -> GUI: 1b. Mengubah data dengan format salah
+    Penjual -> GUI: 2b. Menekan tombol Simpan Perubahan
+    GUI -> Controller: 3b. Mengirim data ke controller
+    activate Controller
+    Controller -> Controller: 4b. Validasi dan menemukan error
+    Controller --> GUI: 5b. Data tidak valid
+    deactivate Controller
+    GUI --> Penjual: 6b. Menampilkan pesan error validasi
+end
+
+@enduml

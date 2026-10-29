@@ -1,0 +1,59 @@
+@startuml Sequence_Lihat_Detail_Barang
+title Sequence Diagram - Lihat Detail Barang
+
+actor "User" as User
+boundary "Halaman Detail Barang" as GUI
+control "LihatInformasiBarangController" as Controller
+entity "Tabel Barang" as DB_Barang
+entity "Tabel User" as DB_User
+
+User -> GUI: 1. Klik barang dari list atau hasil pencarian
+activate GUI
+GUI -> Controller: 2. Request detail barang dengan ID
+activate Controller
+
+Controller -> DB_Barang: 3. Query data barang berdasarkan ID
+activate DB_Barang
+DB_Barang --> Controller: 4. Data barang ditemukan
+deactivate DB_Barang
+
+Controller -> DB_User: 5. Query info penjual
+activate DB_User
+DB_User --> Controller: 6. Data penjual ditemukan
+deactivate DB_User
+
+Controller --> GUI: 7. Kirim detail barang dan info penjual
+deactivate Controller
+GUI --> User: 8. Tampilkan halaman detail dengan:\n- Foto barang, Nama, Harga, Stok\n- Deskripsi, Kategori\n- Info penjual, Tombol Beli, Nego, Chat
+deactivate GUI
+
+User -> GUI: 9. Klik tombol Beli, Nego, atau Chat Penjual
+activate GUI
+GUI --> User: 10. Redirect ke halaman sesuai pilihan
+deactivate GUI
+
+alt Barang tidak ditemukan
+    User -> GUI: 1a. Akses detail barang dengan ID tidak valid
+    GUI -> Controller: 2a. Request detail barang
+    activate Controller
+    Controller -> DB_Barang: 3a. Query data barang
+    activate DB_Barang
+    DB_Barang --> Controller: 4a. Data tidak ditemukan
+    deactivate DB_Barang
+    Controller --> GUI: 5a. Error 404
+    deactivate Controller
+    GUI --> User: 6a. Tampilkan error 404 "Barang tidak ditemukan"
+else Stok habis
+    User -> GUI: 1b. Akses detail barang yang stoknya habis
+    GUI -> Controller: 2b. Request detail barang
+    activate Controller
+    Controller -> DB_Barang: 3b. Query data barang
+    activate DB_Barang
+    DB_Barang --> Controller: 4b. Data ditemukan tapi stok = 0
+    deactivate DB_Barang
+    Controller --> GUI: 5b. Kirim data dengan status stok habis
+    deactivate Controller
+    GUI --> User: 6b. Tampilkan detail dengan badge "Stok Habis"\ndan tombol Beli disabled
+end
+
+@enduml

@@ -1,0 +1,69 @@
+@startuml Sequence_Hapus_Kategori
+title Sequence Diagram - Hapus Kategori (Admin)
+
+actor "Admin" as Admin
+boundary "Halaman Konfirmasi Hapus" as GUI
+control "KelolaKategoriController" as Controller
+entity "Tabel Kategori" as DB_Kategori
+entity "Tabel Barang" as DB_Barang
+
+Admin -> GUI: 1. Klik tombol Hapus pada kategori
+activate GUI
+GUI -> Controller: 2. Request konfirmasi hapus kategori
+activate Controller
+
+Controller -> DB_Barang: 3. Cek jumlah barang dalam kategori
+activate DB_Barang
+DB_Barang --> Controller: 4. Jumlah barang = 0 (tidak ada barang)
+deactivate DB_Barang
+
+Controller --> GUI: 5. Kategori valid untuk dihapus
+deactivate Controller
+GUI --> Admin: 6. Redirect ke halaman konfirmasi\nTampilkan konfirmasi:\n"Yakin hapus kategori '{nama}'?\nKategori ini tidak memiliki barang"
+deactivate GUI
+
+Admin -> GUI: 7. Klik tombol Hapus
+activate GUI
+GUI -> Controller: 8. Request hapus kategori
+activate Controller
+
+Controller -> DB_Barang: 9. Re-check jumlah barang = 0
+activate DB_Barang
+DB_Barang --> Controller: 10. Masih 0 (aman untuk dihapus)
+deactivate DB_Barang
+
+Controller -> DB_Kategori: 11. Hapus kategori dari database
+activate DB_Kategori
+DB_Kategori --> Controller: 12. Data berhasil dihapus
+deactivate DB_Kategori
+
+Controller --> GUI: 13. Hapus berhasil
+deactivate Controller
+GUI --> Admin: 14. Tampilkan notifikasi\n"Kategori berhasil dihapus"
+deactivate GUI
+
+alt Ada barang dalam kategori
+    Admin -> GUI: 1a. Klik hapus kategori yang memiliki barang
+    GUI -> Controller: 2a. Request konfirmasi hapus
+    activate Controller
+    Controller -> DB_Barang: 3a. Cek jumlah barang
+    activate DB_Barang
+    DB_Barang --> Controller: 4a. Jumlah barang > 0
+    deactivate DB_Barang
+    Controller --> GUI: 5a. Kategori tidak dapat dihapus
+    deactivate Controller
+    GUI --> Admin: 6a. Tampilkan warning\n"Tidak dapat hapus. Masih ada {X} barang dalam kategori ini.\nPindahkan/hapus barang terlebih dahulu"\nHanya tampilkan tombol Kembali
+else Ada barang baru masuk saat re-check
+    Admin -> GUI: 1b. Klik Hapus (saat konfirmasi, ada barang baru masuk)
+    GUI -> Controller: 2b. Request hapus
+    activate Controller
+    Controller -> DB_Barang: 3b. Re-check jumlah barang
+    activate DB_Barang
+    DB_Barang --> Controller: 4b. Jumlah barang > 0 (ada barang baru)
+    deactivate DB_Barang
+    Controller --> GUI: 5b. Tidak dapat hapus
+    deactivate Controller
+    GUI --> Admin: 6b. Tampilkan error\n"Tidak dapat hapus. Ada barang baru masuk"
+end
+
+@enduml

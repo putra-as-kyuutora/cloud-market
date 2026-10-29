@@ -1,0 +1,49 @@
+@startuml Hapus_Kategori
+title Hapus Kategori (Admin)
+
+|Aktor|
+start
+:Klik tombol Hapus
+pada kategori;
+
+|Sistem|
+:Redirect ke halaman
+konfirmasi hapus;
+:Cek jumlah barang
+dalam kategori;
+
+if (Ada barang?) then (ya)
+  :Tampilkan warning
+  "Tidak dapat hapus.
+  Masih ada {X} barang
+  dalam kategori ini.
+  Pindahkan/hapus barang
+  terlebih dahulu";
+  :Hanya tombol Kembali;
+else (tidak)
+  :Tampilkan konfirmasi
+  "Yakin hapus kategori '{nama}'?
+  Kategori ini tidak memiliki
+  barang";
+  
+  |Aktor|
+  if (Pilihan?) then (Batal)
+  else (Hapus)
+    |Sistem|
+    :Re-check jumlah barang = 0;
+    
+    if (Ada barang?) then (ya)
+      :Tampilkan error
+      "Tidak dapat hapus.
+      Ada barang baru masuk";
+    else (tidak)
+      :Hapus kategori dari database;
+      :Tampilkan notifikasi
+      "Kategori berhasil dihapus";
+    endif
+  endif
+endif
+
+stop
+
+@enduml

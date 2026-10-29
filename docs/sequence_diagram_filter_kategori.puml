@@ -1,0 +1,68 @@
+@startuml Sequence_Filter_Kategori
+title Sequence Diagram - Filter Barang Berdasarkan Kategori
+
+actor "User" as User
+boundary "Halaman Barang dengan Filter" as GUI
+control "CariBarangController" as Controller
+entity "Tabel Kategori" as DB_Kategori
+entity "Tabel Barang" as DB_Barang
+
+User -> GUI: 1. Melihat list kategori di sidebar atau beranda
+activate GUI
+GUI -> Controller: 2. Request daftar kategori
+activate Controller
+
+Controller -> DB_Kategori: 3. Ambil daftar semua kategori aktif
+activate DB_Kategori
+DB_Kategori --> Controller: 4. Data kategori ditemukan
+deactivate DB_Kategori
+
+Controller --> GUI: 5. Kirim list kategori
+deactivate Controller
+GUI --> User: 6. Tampilkan semua kategori (clickable)
+deactivate GUI
+
+User -> GUI: 7. Klik salah satu kategori (misal: "Elektronik")
+activate GUI
+GUI --> User: 8. Redirect ke /barang?kategori={id}
+deactivate GUI
+
+User -> GUI: 9. Membuka halaman barang dengan filter kategori
+activate GUI
+GUI -> Controller: 10. Request barang dengan filter kategori
+activate Controller
+
+Controller -> DB_Barang: 11. Ambil barang yang termasuk\ndalam kategori yang dipilih
+activate DB_Barang
+DB_Barang --> Controller: 12. Data barang ditemukan
+deactivate DB_Barang
+
+Controller --> GUI: 13. Kirim list barang
+deactivate Controller
+GUI --> User: 14. Tampilkan grid barang dalam kategori\ndengan breadcrumb: Home > Kategori > {namaKategori}\nFilter tambahan tetap tersedia (harga, urutan)
+deactivate GUI
+
+User -> GUI: 15. Pilih aksi: Ganti kategori atau Pilih barang
+activate GUI
+
+alt User ganti kategori
+    User -> GUI: 1a. Klik kategori lain
+    GUI --> User: 2a. Reload halaman dengan kategori baru
+else User pilih barang
+    User -> GUI: 1b. Klik salah satu barang
+    GUI --> User: 2b. Redirect ke /barang/{id}
+else Tidak ada barang di kategori
+    GUI -> Controller: 1c. Request barang (kategori kosong)
+    activate Controller
+    Controller -> DB_Barang: 2c. Query barang di kategori
+    activate DB_Barang
+    DB_Barang --> Controller: 3c. Tidak ada data
+    deactivate DB_Barang
+    Controller --> GUI: 4c. List kosong
+    deactivate Controller
+    GUI --> User: 5c. Tampilkan empty state\n"Belum ada barang di kategori {namaKategori}"
+end
+
+deactivate GUI
+
+@enduml

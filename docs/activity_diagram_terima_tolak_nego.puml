@@ -1,0 +1,76 @@
+@startuml Terima_Tolak_Nego
+title Terima/Tolak Tawaran Nego (Penjual)
+
+|Aktor|
+start
+:Membuka chat dan melihat
+pesan nego dari pembeli
+dengan tombol Terima/Tolak;
+
+|Sistem|
+:Tampilkan bubble nego
+khusus dengan:
+- Info barang & tawaran
+- Tombol "Terima Tawaran" (hijau)
+- Tombol "Tolak Tawaran" (merah);
+
+|Aktor|
+:Memeriksa harga tawaran;
+
+if (Setuju dengan tawaran?) then (tidak)
+  |Aktor|
+  :Klik tombol
+  "Tolak Tawaran";
+  
+  |Sistem|
+  :Set status tawaran menjadi 'ditolak';
+  
+  :Kirim pesan otomatis:
+  "Tawaran Anda ditolak.
+  Silakan ajukan tawaran lain
+  atau beli dengan harga normal";
+  
+  :Tampilkan notifikasi
+  "Tawaran ditolak";
+  :Tombol Terima/Tolak hilang;
+else (ya)
+  |Aktor|
+  :Klik tombol
+  "Terima Tawaran";
+  
+  |Sistem|
+  :Tampilkan dialog konfirmasi
+  "Terima tawaran Rp {hargaNego}
+  untuk {namaBarang}?";
+  
+  |Aktor|
+  if (Pilihan?) then (Batal)
+    :Tutup dialog;
+  else (Ya, Terima)
+    |Sistem|
+    :Set status tawaran menjadi 'diterima'
+    dan simpan harga kesepakatan;
+    
+    :Kirim pesan otomatis:
+    "Tawaran Anda diterima!
+    Harga Rp {hargaNego}
+    berlaku untuk pembelian ini";
+    
+    :Generate link checkout
+    dengan harga nego:
+    /beli/{idBarang}?nego={idNego};
+    
+    :Tampilkan notifikasi
+    "Tawaran diterima";
+    :Tombol Terima/Tolak hilang;
+    
+    note right
+    Pembeli dapat checkout
+    dengan harga nego
+    end note
+  endif
+endif
+
+stop
+
+@enduml

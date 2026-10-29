@@ -1,0 +1,76 @@
+@startuml Nego_Harga
+title Nego Harga via Chat
+
+|Aktor|
+start
+:Klik tombol "Nego Harga"
+di halaman detail barang;
+
+|Sistem|
+:Redirect ke
+/pesan?partner={idPenjual}
+&barang={id}&nego=1;
+
+:Tampilkan halaman chat
+dengan panel nego di atas:
+- Info barang (foto, nama,
+  harga asli)
+- Form nego dengan input
+  harga tawaran
+- Tombol "Kirim Tawaran"
+- Riwayat chat di bawah;
+
+|Aktor|
+repeat
+  :Mengisi harga tawaran
+  (misal: 4500000 untuk
+  barang seharga 5000000);
+  
+  |Sistem|
+  :Validasi harga tawaran;
+  
+  if (Valid?) is (tidak) then
+    if (Harga <= 0?) then (ya)
+      :Tampilkan error
+      "Harga harus lebih dari Rp 0";
+    else (Harga >= harga asli)
+      :Tampilkan error
+      "Harga tawaran harus lebih
+      rendah dari harga asli";
+    endif
+  endif
+repeat while (Valid?) is (tidak) not (ya)
+
+|Aktor|
+:Klik "Kirim Tawaran";
+
+|Sistem|
+:Cek tawaran aktif
+untuk barang ini;
+
+if (Sudah ada tawaran pending?) then (ya)
+  :Tampilkan info
+  "Anda sudah punya tawaran
+  aktif. Tunggu respons penjual";
+else (tidak)
+  :Simpan data tawaran nego
+  dengan status 'pending';
+  
+  :Kirim pesan otomatis:
+  "🤝 [NEGO] {namaBarang}
+  - Harga Tawaran: Rp {hargaNego}
+  (dari harga Rp {hargaAsli})";
+  
+  :Tampilkan notifikasi
+  "Tawaran dikirim.
+  Menunggu respons penjual";
+  
+  note right
+  Penjual melihat pesan nego
+  dengan tombol Terima/Tolak
+  end note
+endif
+
+stop
+
+@enduml

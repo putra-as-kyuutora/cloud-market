@@ -1,0 +1,65 @@
+@startuml Sequence_Edit_Data_Pribadi
+title Sequence Diagram - Edit Data Pribadi
+
+actor "User" as User
+boundary "Halaman Edit Profil" as GUI
+control "EditDataPribadiController" as Controller
+entity "Tabel User" as DB
+
+User -> GUI: 1. Mengakses menu Profil/Edit Data Pribadi
+activate GUI
+GUI -> Controller: 2. Request data user saat ini
+activate Controller
+
+Controller -> DB: 3. Ambil data user dari database
+activate DB
+DB --> Controller: 4. Data user ditemukan
+deactivate DB
+
+Controller --> GUI: 5. Kirim data user
+deactivate Controller
+GUI --> User: 6. Tampilkan form edit profil (pre-filled)
+deactivate GUI
+
+User -> GUI: 7. Mengubah data yang ingin diupdate
+activate GUI
+User -> GUI: 8. Menekan tombol Simpan Perubahan
+GUI -> Controller: 9. Mengirim data yang diubah
+activate Controller
+
+Controller -> Controller: 10. Validasi data baru
+
+Controller -> DB: 11. Simpan perubahan data user ke database
+activate DB
+DB --> Controller: 12. Data berhasil diperbarui
+deactivate DB
+
+Controller --> GUI: 13. Update berhasil
+deactivate Controller
+GUI --> User: 14. Tampilkan notifikasi "Profil berhasil diperbarui"
+deactivate GUI
+
+alt Data tidak valid
+    User -> GUI: 1a. Mengubah data dengan format yang salah
+    User -> GUI: 2a. Menekan tombol Simpan Perubahan
+    GUI -> Controller: 3a. Mengirim data ke controller
+    activate Controller
+    Controller -> Controller: 4a. Validasi dan menemukan error
+    Controller --> GUI: 5a. Data tidak valid
+    deactivate Controller
+    GUI --> User: 6a. Menampilkan pesan error validasi
+else Ubah password dengan password lama salah
+    User -> GUI: 1b. Mengisi password lama yang salah
+    User -> GUI: 2b. Menekan tombol Simpan Perubahan
+    GUI -> Controller: 3b. Mengirim data ke controller
+    activate Controller
+    Controller -> DB: 4b. Verifikasi password lama
+    activate DB
+    DB --> Controller: 5b. Password lama tidak cocok
+    deactivate DB
+    Controller --> GUI: 6b. Password lama salah
+    deactivate Controller
+    GUI --> User: 7b. Menampilkan pesan "Password lama salah"
+end
+
+@enduml

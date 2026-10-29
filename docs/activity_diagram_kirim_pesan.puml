@@ -1,0 +1,65 @@
+@startuml Kirim_Pesan
+title Kirim Pesan (Pembeli/Penjual)
+
+|Aktor|
+start
+:Mengakses halaman chat
+/pesan?partner={idPartner};
+
+|Sistem|
+:Validasi user login
+dan partner exist;
+
+if (Valid?) then (tidak)
+  if (User tidak login?) then (ya)
+    :Redirect ke /login;
+  else (Partner tidak exist)
+    :Tampilkan error 404;
+  endif
+else (ya)
+  if (Partner = diri sendiri?) then (ya)
+    :Tampilkan error
+    "Tidak dapat chat
+    dengan diri sendiri";
+  else (tidak)
+    :Ambil riwayat percakapan
+    antara user dan partner;
+    
+    :Tampilkan halaman chat;
+    
+    |Aktor|
+    repeat
+      :Mengetik pesan di textarea;
+      
+      :Menekan tombol Kirim
+      atau Enter;
+      
+      |Sistem|
+      :Validasi isi pesan;
+      
+      if (Pesan valid?) is (tidak) then
+        if (Kosong?) then (ya)
+          :Tampilkan error
+          "Pesan tidak boleh kosong";
+        else (Terlalu panjang)
+          :Tampilkan error
+          "Pesan maksimal
+          1000 karakter";
+        endif
+      endif
+    repeat while (Pesan valid?) is (tidak) not (ya)
+    
+    |Sistem|
+    :Simpan pesan baru ke database
+    dengan timestamp saat ini;
+    
+    :Append bubble pesan baru;
+    :Kosongkan textarea;
+    :Auto-scroll ke pesan
+    terbaru;
+  endif
+endif
+
+stop
+
+@enduml

@@ -1,0 +1,67 @@
+@startuml Sequence_Lihat_Pesanan_Masuk_Penjual
+title Sequence Diagram - Lihat Pesanan Masuk (Penjual)
+
+actor "Penjual" as Penjual
+boundary "Halaman Pesanan Masuk" as GUI
+control "PesananController" as Controller
+entity "Tabel Transaksi" as DB
+
+Penjual -> GUI: 1. Mengakses menu Pesanan Masuk
+activate GUI
+GUI -> Controller: 2. Request list pesanan masuk
+activate Controller
+
+Controller -> Controller: 3. Cek user adalah Penjual approved
+
+Controller -> DB: 4. Ambil semua pesanan yang berisi\nbarang milik penjual ini
+activate DB
+DB --> Controller: 5. Data pesanan ditemukan
+deactivate DB
+
+Controller --> GUI: 6. Kirim list pesanan
+deactivate Controller
+GUI --> Penjual: 7. Tampilkan halaman Pesanan Masuk dengan:\n- Filter tabs (Semua, Menunggu Konfirmasi, dll)\n- Tabel pesanan
+deactivate GUI
+
+Penjual -> GUI: 8. Klik tab filter
+activate GUI
+GUI -> Controller: 9. Request pesanan dengan filter status
+activate Controller
+
+Controller -> DB: 10. Filter pesanan berdasarkan status yang dipilih
+activate DB
+DB --> Controller: 11. Data pesanan filtered ditemukan
+deactivate DB
+
+Controller --> GUI: 12. Kirim hasil filter
+deactivate Controller
+GUI --> Penjual: 13. Tampilkan hasil filter
+deactivate GUI
+
+Penjual -> GUI: 14. Klik "Lihat Detail" pada pesanan
+activate GUI
+GUI --> Penjual: 15. Redirect ke /penjual/pesanan/{id}
+deactivate GUI
+
+alt Penjual tidak approved
+    Penjual -> GUI: 1a. Akses menu dengan status belum approved
+    GUI -> Controller: 2a. Request list pesanan
+    activate Controller
+    Controller -> Controller: 3a. Cek status dan tidak approved
+    Controller --> GUI: 4a. Error 403
+    deactivate Controller
+    GUI --> Penjual: 5a. Tampilkan error 403
+else Belum ada pesanan masuk
+    Penjual -> GUI: 1b. Akses menu (belum ada pesanan)
+    GUI -> Controller: 2b. Request list pesanan
+    activate Controller
+    Controller -> DB: 3b. Query pesanan penjual
+    activate DB
+    DB --> Controller: 4b. Tidak ada data pesanan
+    deactivate DB
+    Controller --> GUI: 5b. List kosong
+    deactivate Controller
+    GUI --> Penjual: 6b. Tampilkan empty state\n"Belum ada pesanan masuk. Promosikan produk Anda!"
+end
+
+@enduml

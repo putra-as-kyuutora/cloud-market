@@ -1,0 +1,72 @@
+@startuml Edit_Barang
+title Edit Barang (Penjual)
+
+|Aktor|
+start
+:Klik tombol Edit
+pada barang;
+
+|Sistem|
+:Ambil data barang
+dari database;
+
+if (Barang ditemukan?) then (tidak)
+  :Tampilkan error 404
+  "Barang tidak ditemukan";
+else (ya)
+  :Tampilkan form edit
+  (pre-filled dengan
+  data barang saat ini);
+  
+  |Aktor|
+  repeat
+    :Mengubah data barang
+    (nama, harga, stok,
+    kategori, deskripsi);
+    
+    |Sistem|
+    :Validasi inputan;
+    
+    if (Valid?) is (tidak) then
+      :Tampilkan error
+      field yang tidak valid;
+    endif
+  repeat while (Valid?) is (tidak) not (ya)
+  
+  |Aktor|
+  if (Ganti foto?) then (ya)
+    repeat
+      :Upload foto barang baru;
+      
+      |Sistem|
+      :Validasi file
+      (format, ukuran, MIME);
+      
+      if (File valid?) is (tidak) then
+        :Tampilkan error
+        "Format/ukuran tidak valid";
+      endif
+    repeat while (File valid?) is (tidak) not (ya)
+    
+    |Sistem|
+    :Hapus foto lama;
+    :Simpan foto baru ke
+    /uploads/barang/;
+  else (tidak)
+    :Tetap gunakan foto lama;
+  endif
+  
+  |Aktor|
+  :Menekan tombol
+  Simpan Perubahan;
+  
+  |Sistem|
+  :Simpan perubahan data barang
+  ke database;
+  :Tampilkan notifikasi
+  "Barang berhasil diperbarui";
+endif
+
+stop
+
+@enduml

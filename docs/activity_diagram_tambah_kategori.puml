@@ -1,0 +1,46 @@
+@startuml Tambah_Kategori
+title Tambah Kategori (Admin)
+
+|Aktor|
+start
+:Klik tombol
+Tambah Kategori;
+
+|Sistem|
+:Redirect ke
+/admin/kategori/tambah;
+:Tampilkan form dengan
+input Nama Kategori;
+
+|Aktor|
+repeat
+  :Mengisi nama kategori
+  (misal: "Elektronik");
+  
+  |Sistem|
+  :Validasi nama;
+  
+  if (Valid?) is (tidak) then
+    if (Kosong?) then (ya)
+      :Tampilkan error
+      "Nama kategori wajib diisi";
+    else if (Terlalu panjang) then (ya)
+      :Tampilkan error
+      "Maksimal 100 karakter";
+    else (Duplikat)
+      :Tampilkan error
+      "Kategori sudah ada";
+    endif
+  endif
+repeat while (Valid?) is (tidak) not (ya)
+
+|Aktor|
+:Menekan tombol Simpan;
+
+|Sistem|
+:Simpan kategori baru ke database;
+:Tampilkan notifikasi
+"Kategori berhasil ditambahkan";
+stop
+
+@enduml

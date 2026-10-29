@@ -1,0 +1,54 @@
+@startuml Filter_Barang_Kategori
+title Filter Barang Berdasarkan Kategori
+
+|Aktor|
+start
+:Melihat list kategori
+di sidebar atau
+beranda;
+
+|Sistem|
+:Menampilkan daftar
+semua kategori aktif;
+
+|Aktor|
+:Klik salah satu kategori
+(misal: "Elektronik");
+
+|Sistem|
+:Redirect ke
+/barang?kategori={id};
+:Ambil barang yang termasuk
+dalam kategori yang dipilih;
+
+if (Ada barang di kategori?) then (tidak)
+  :Tampilkan empty state
+  "Belum ada barang di
+  kategori {namaKategori}";
+else (ya)
+  :Tampilkan grid barang
+  dalam kategori dipilih;
+  :Breadcrumb: Home > Kategori
+  > {namaKategori};
+  :Filter tambahan tetap
+  tersedia (harga, urutan);
+  
+  |Aktor|
+  if (Ganti kategori?) then (ya)
+    :Klik kategori lain;
+    |Sistem|
+    :Reload halaman dengan
+    kategori baru;
+  else (Pilih barang?)
+    if (ya) then (ya)
+      |Sistem|
+      :Redirect ke
+      /barang/{id};
+    else (tidak)
+    endif
+  endif
+endif
+
+stop
+
+@enduml

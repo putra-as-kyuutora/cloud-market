@@ -1,0 +1,36 @@
+@startuml Dashboard_Admin
+title Lihat Dashboard Admin
+
+|Aktor|
+start
+:Login sebagai Admin atau
+akses /admin/dashboard;
+
+|Sistem|
+:Cek user adalah Admin;
+
+if (Admin?) then (tidak)
+  :Tampilkan error 403
+  "Akses ditolak";
+else (ya)
+  :Ambil statistik platform:
+  - Total Pengguna
+  - Total Penjual Aktif
+  - Penjual Pending KYC
+  - Total Barang Aktif
+  - Transaksi Selesai
+  - Transaksi Menunggu
+  - Total Kategori;
+  
+  :Ambil aktivitas terbaru:
+  - 5 transaksi terbaru
+  - 5 penjual baru daftar;
+  
+  :Tampilkan halaman dashboard
+  dengan stats cards dan
+  tabel aktivitas;
+endif
+
+stop
+
+@enduml

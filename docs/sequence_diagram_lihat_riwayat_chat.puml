@@ -1,0 +1,64 @@
+@startuml Sequence_Lihat_Riwayat_Chat
+title Sequence Diagram - Lihat Riwayat Chat
+
+actor "User" as User
+boundary "Halaman Daftar Chat" as GUI
+control "PesanController" as Controller
+entity "Tabel Pesan" as DB
+
+User -> GUI: 1. Mengakses menu Pesan atau URL /pesan
+activate GUI
+GUI -> Controller: 2. Request daftar partner chat
+activate Controller
+
+Controller -> Controller: 3. Cek user sudah login
+
+Controller -> DB: 4. Ambil daftar partner chat\ndengan riwayat percakapan user
+activate DB
+DB --> Controller: 5. Data partner ditemukan
+deactivate DB
+
+Controller -> Controller: 6. Untuk setiap partner, ambil:\n- Info partner (nama, foto)\n- Pesan terakhir\n- Unread count
+
+Controller --> GUI: 7. Kirim list partner chat
+deactivate Controller
+GUI --> User: 8. Tampilkan halaman Pesan dengan list partner:\n- Foto profil, Nama partner\n- Preview pesan terakhir\n- Timestamp relatif, Badge unread\n- Urut by pesan terbaru
+deactivate GUI
+
+User -> GUI: 9. Klik partner chat
+activate GUI
+GUI -> Controller: 10. Request tandai pesan sebagai dibaca
+activate Controller
+
+Controller -> DB: 11. Tandai pesan dari partner\nsebagai sudah dibaca
+activate DB
+DB --> Controller: 12. Status berhasil diperbarui
+deactivate DB
+
+Controller --> GUI: 13. Update berhasil
+deactivate Controller
+GUI --> User: 14. Redirect ke /pesan?partner={id}
+deactivate GUI
+
+alt User tidak login
+    User -> GUI: 1a. Akses menu Pesan tanpa login
+    GUI -> Controller: 2a. Request daftar chat
+    activate Controller
+    Controller -> Controller: 3a. Cek user dan tidak login
+    Controller --> GUI: 4a. User tidak login
+    deactivate Controller
+    GUI --> User: 5a. Redirect ke /login
+else Belum ada partner chat
+    User -> GUI: 1b. Akses menu Pesan (belum pernah chat)
+    GUI -> Controller: 2b. Request daftar partner
+    activate Controller
+    Controller -> DB: 3b. Query partner chat
+    activate DB
+    DB --> Controller: 4b. Tidak ada partner
+    deactivate DB
+    Controller --> GUI: 5b. List kosong
+    deactivate Controller
+    GUI --> User: 6b. Tampilkan empty state\n"Belum ada percakapan. Mulai chat dengan penjual atau pembeli!"\ndengan link "Lihat Semua Percakapan" ke /pesan
+end
+
+@enduml

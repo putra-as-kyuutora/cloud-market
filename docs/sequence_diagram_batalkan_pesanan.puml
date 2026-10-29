@@ -1,0 +1,75 @@
+@startuml Sequence_Batalkan_Pesanan
+title Sequence Diagram - Batalkan Pesanan (Pembeli)
+
+actor "Pembeli" as Pembeli
+boundary "Halaman Detail Pesanan" as GUI
+control "PesananController" as Controller
+entity "Tabel Transaksi" as DB_Transaksi
+entity "Tabel DetailTransaksi" as DB_Detail
+entity "Tabel Barang" as DB_Barang
+
+Pembeli -> GUI: 1. Membuka detail pesanan atau halaman pembayaran
+activate GUI
+GUI -> Controller: 2. Request detail pesanan
+activate Controller
+
+Controller -> DB_Transaksi: 3. Query data pesanan
+activate DB_Transaksi
+DB_Transaksi --> Controller: 4. Data ditemukan
+deactivate DB_Transaksi
+
+Controller -> Controller: 5. Cek status: 'Menunggu Pembayaran'\nOR 'Ditolak'
+
+Controller --> GUI: 6. Status valid untuk dibatalkan
+deactivate Controller
+GUI --> Pembeli: 7. Tampilkan tombol Batalkan Pesanan
+deactivate GUI
+
+Pembeli -> GUI: 8. Klik tombol Batalkan Pesanan
+activate GUI
+GUI --> Pembeli: 9. Tampilkan dialog konfirmasi\n"Yakin batalkan pesanan?\nStok barang akan dikembalikan"
+deactivate GUI
+
+Pembeli -> GUI: 10. Klik Ya, Batalkan
+activate GUI
+GUI -> Controller: 11. Request batalkan pesanan
+activate Controller
+
+Controller -> DB_Transaksi: 12. BEGIN TRANSACTION
+activate DB_Transaksi
+
+Controller -> DB_Detail: 13. Ambil semua item pesanan
+activate DB_Detail
+DB_Detail --> Controller: 14. List item ditemukan
+deactivate DB_Detail
+
+Controller -> DB_Barang: 15. Kembalikan stok per item
+activate DB_Barang
+DB_Barang --> Controller: 16. Stok berhasil dikembalikan
+deactivate DB_Barang
+
+Controller -> DB_Transaksi: 17. Set status pembayaran = 'Dibatalkan'\ndan kembalikan stok semua item
+
+Controller -> DB_Transaksi: 18. COMMIT transaction
+DB_Transaksi --> Controller: 19. Transaction committed
+deactivate DB_Transaksi
+
+Controller --> GUI: 20. Pesanan berhasil dibatalkan
+deactivate Controller
+GUI --> Pembeli: 21. Tampilkan notifikasi\n"Pesanan berhasil dibatalkan. Stok barang dikembalikan"
+deactivate GUI
+
+alt Status tidak valid untuk dibatalkan
+    Pembeli -> GUI: 1a. Akses pesanan dengan status selain\n'Menunggu Pembayaran' atau 'Ditolak'
+    GUI -> Controller: 2a. Request detail pesanan
+    activate Controller
+    Controller -> DB_Transaksi: 3a. Query data pesanan
+    activate DB_Transaksi
+    DB_Transaksi --> Controller: 4a. Status tidak valid
+    deactivate DB_Transaksi
+    Controller --> GUI: 5a. Status tidak valid
+    deactivate Controller
+    GUI --> Pembeli: 6a. Tidak tampilkan tombol batal\nTampilkan info "Pesanan tidak dapat dibatalkan (status: {status})"
+end
+
+@enduml

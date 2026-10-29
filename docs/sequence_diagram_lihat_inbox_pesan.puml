@@ -1,0 +1,72 @@
+@startuml Sequence_Lihat_Inbox_Pesan
+title Sequence Diagram - Lihat Inbox Pesan Masuk
+
+actor "User" as User
+boundary "Navbar/Halaman Inbox" as GUI
+control "PesanController" as Controller
+entity "Tabel Pesan" as DB
+
+User -> GUI: 1. Melihat badge notifikasi angka merah\ndi icon Pesan di navbar
+activate GUI
+GUI -> Controller: 2. Request hitung unread count
+activate Controller
+
+Controller -> DB: 3. Hitung jumlah pesan yang belum dibaca
+activate DB
+DB --> Controller: 4. Unread count ditemukan
+deactivate DB
+
+Controller --> GUI: 5. Kirim count
+deactivate Controller
+GUI --> User: 6. Tampilkan badge merah dengan angka unread\n(atau tidak tampilkan jika count = 0)
+deactivate GUI
+
+User -> GUI: 7. Klik icon Pesan atau menu Inbox
+activate GUI
+GUI --> User: 8. Redirect ke /pesan/inbox
+deactivate GUI
+
+User -> GUI: 9. Membuka halaman inbox
+activate GUI
+GUI -> Controller: 10. Request pesan belum dibaca
+activate Controller
+
+Controller -> DB: 11. Ambil daftar pesan yang belum dibaca oleh user
+activate DB
+DB --> Controller: 12. Data pesan unread ditemukan
+deactivate DB
+
+Controller --> GUI: 13. Kirim list pesan unread
+deactivate Controller
+GUI --> User: 14. Tampilkan halaman Inbox:\n- Header dengan badge count\n- List pesan unread dengan preview\n- Link "Lihat Semua Percakapan"
+deactivate GUI
+
+User -> GUI: 15. Klik salah satu pesan
+activate GUI
+GUI -> Controller: 16. Request tandai pesan sebagai dibaca
+activate Controller
+
+Controller -> DB: 17. Tandai pesan sebagai sudah dibaca
+activate DB
+DB --> Controller: 18. Status berhasil diperbarui
+deactivate DB
+
+Controller --> GUI: 19. Update berhasil, badge count berkurang
+deactivate Controller
+GUI --> User: 20. Redirect ke /pesan?partner={idPengirim}
+deactivate GUI
+
+alt Tidak ada pesan unread
+    User -> GUI: 1a. Klik icon Pesan (tidak ada unread)
+    GUI -> Controller: 2a. Request pesan unread
+    activate Controller
+    Controller -> DB: 3a. Query pesan unread
+    activate DB
+    DB --> Controller: 4a. Tidak ada data
+    deactivate DB
+    Controller --> GUI: 5a. List kosong
+    deactivate Controller
+    GUI --> User: 6a. Tampilkan empty state\n"Tidak ada pesan baru. Semua pesan sudah dibaca"\ndengan link "Lihat Semua Percakapan" ke /pesan
+end
+
+@enduml

@@ -1,0 +1,48 @@
+@startuml Tambah_Barang
+title Tambah Barang (Penjual)
+
+|Aktor|
+start
+
+repeat
+  :Mengisi nama barang, harga,
+  stok, kategori, dan deskripsi;
+  
+  |Sistem|
+  :Sistem mengecek inputan
+  aktor;
+  
+  if (Valid?) is (tidak) then
+    :Menampilkan pesan error
+    field yang tidak valid;
+  endif
+repeat while (Valid?) is (tidak) not (ya)
+
+|Aktor|
+repeat
+  :Upload foto barang;
+  
+  |Sistem|
+  :Sistem validasi file
+  (format, ukuran, MIME);
+  
+  if (File Valid?) is (tidak) then
+    :Menampilkan error
+    "Format/ukuran file tidak valid";
+  endif
+repeat while (File Valid?) is (tidak) not (ya)
+
+|Aktor|
+:Menekan tombol
+Simpan Barang;
+
+|Sistem|
+:Simpan file ke
+/uploads/barang/;
+:Simpan data barang ke database
+dengan ID penjual saat ini;
+:Menampilkan notifikasi
+"Barang berhasil ditambahkan";
+stop
+
+@enduml

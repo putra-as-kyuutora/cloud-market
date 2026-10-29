@@ -1,0 +1,86 @@
+@startuml Update_Status_Pengiriman
+title Update Status Pengiriman (Penjual)
+
+|Aktor|
+start
+:Membuka detail pesanan
+dengan status "Sudah Dibayar";
+
+|Sistem|
+:Cek statusPembayaran
+= 'Sudah Dibayar' AND
+statusPengiriman
+= 'Belum Dikirim';
+
+if (Status valid?) then (tidak)
+  :Tidak tampilkan tombol
+  "Update Status Pengiriman";
+else (ya)
+  :Tampilkan tombol
+  "Update Status Pengiriman";
+  
+  |Aktor|
+  :Packing barang dan
+  serahkan ke kurir/ekspedisi;
+  
+  :Klik tombol
+  "Update Status Pengiriman";
+  
+  |Sistem|
+  :Tampilkan modal dengan form;
+  
+  |Aktor|
+  if (Pilih aksi?) then (Batal)
+    :Tutup modal;
+  else (Isi form)
+    if (Ada nomor resi?) then (ya)
+      :Mengisi nomor resi;
+    else (tidak)
+      :Kosongkan field resi;
+    endif
+    
+    repeat
+      :Centang checkbox
+      konfirmasi;
+      
+      |Sistem|
+      :Validasi checkbox
+      tercentang;
+      
+      if (Checkbox tercentang?) is (tidak) then
+        :Tampilkan error
+        "Centang konfirmasi bahwa
+        barang sudah dikirim";
+      endif
+    repeat while (Checkbox tercentang?) is (tidak) not (ya)
+    
+    |Aktor|
+    :Klik tombol Kirim;
+    
+    |Sistem|
+    :Validasi transaksi,
+    ownership, dan status;
+    
+    if (Valid?) then (tidak)
+      :Tampilkan error
+      "Tidak dapat update";
+    else (ya)
+      :Set status pengiriman = 'Dikirim'
+      dan simpan nomor resi (jika ada);
+      
+      if (Ada resi?) then (ya)
+        :Tampilkan notifikasi
+        "Status diupdate. Pembeli
+        dapat track dengan resi:
+        {resi}";
+      else (tidak)
+        :Tampilkan notifikasi
+        "Status diupdate";
+      endif
+    endif
+  endif
+endif
+
+stop
+
+@enduml

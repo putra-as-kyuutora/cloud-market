@@ -1,0 +1,96 @@
+@startuml Kelola_Akun_Pengguna
+title Kelola Akun Pengguna (Admin)
+
+|Aktor|
+start
+:Mengakses menu
+Kelola Pengguna;
+
+|Sistem|
+:Cek user adalah Admin;
+
+if (Admin?) then (tidak)
+  :Tampilkan error 403
+  "Akses ditolak";
+else (ya)
+  :Ambil daftar semua akun pengguna
+  dari database;
+  
+  :Tampilkan halaman
+  Kelola Pengguna dengan:
+  - Form pencarian & filter
+  - Tabel pengguna;
+  
+  |Aktor|
+  if (Gunakan pencarian/filter?) then (ya)
+    :Mengisi keyword pencarian
+    dan/atau memilih filter role;
+    
+    :Klik tombol Cari;
+    
+    |Sistem|
+    :Reload dengan query string
+    /admin/akun?cari=keyword
+    &role=penjual;
+    
+    :Filter pengguna berdasarkan
+    keyword (nama/email)
+    dan role yang dipilih;
+    
+    if (Ada hasil?) then (tidak)
+      :Tampilkan
+      "Tidak ada pengguna
+      yang sesuai";
+    else (ya)
+      :Tampilkan hasil filter;
+    endif
+  else (tidak)
+    :Tampilkan semua pengguna;
+  endif
+  
+  |Aktor|
+  if (Pilih aksi?) then (Detail)
+    |Sistem|
+    :Redirect ke
+    /admin/akun/{id};
+  else if (Nonaktifkan) then (Nonaktifkan)
+    :Klik tombol
+    "Nonaktifkan Akun";
+    
+    |Sistem|
+    :Tampilkan dialog konfirmasi
+    "Nonaktifkan akun {nama}?
+    Pengguna tidak dapat login";
+    
+    |Aktor|
+    if (Pilihan?) then (Batal)
+      :Tutup dialog;
+    else (Konfirmasi)
+      |Sistem|
+      :Validasi akun bukan admin;
+      
+      :Set status akun menjadi
+      nonaktif (is_active = 0);
+      
+      :Tampilkan notifikasi
+      "Akun {nama} berhasil
+      dinonaktifkan";
+    endif
+  else if (Aktifkan) then (Aktifkan)
+    :Klik tombol
+    "Aktifkan Akun";
+    
+    |Sistem|
+    :Set status akun menjadi
+    aktif (is_active = 1);
+    
+    :Tampilkan notifikasi
+    "Akun {nama} berhasil
+    diaktifkan kembali";
+  else (Lihat saja)
+  endif
+endif
+
+stop
+
+@enduml

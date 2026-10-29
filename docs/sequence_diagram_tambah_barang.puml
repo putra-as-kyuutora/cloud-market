@@ -1,0 +1,51 @@
+@startuml Sequence_Tambah_Barang
+title Sequence Diagram - Tambah Barang (Penjual)
+
+actor "Penjual" as Penjual
+boundary "Halaman Tambah Barang" as GUI
+control "TambahBarangController" as Controller
+entity "Tabel Barang" as DB
+
+Penjual -> GUI: 1. Mengisi nama barang, harga, stok,\nkategori, dan deskripsi
+activate GUI
+Penjual -> GUI: 2. Upload foto barang
+Penjual -> GUI: 3. Menekan tombol Simpan Barang
+GUI -> Controller: 4. Mengirim data barang ke controller
+activate Controller
+
+Controller -> Controller: 5. Validasi data barang (nama, harga, stok)
+Controller -> Controller: 6. Validasi file foto (format, ukuran, MIME)
+
+Controller -> Controller: 7. Simpan file ke /uploads/barang/
+
+Controller -> DB: 8. Simpan data barang ke database\ndengan ID penjual saat ini
+activate DB
+DB --> Controller: 9. Data berhasil disimpan
+deactivate DB
+
+Controller --> GUI: 10. Barang berhasil ditambahkan
+deactivate Controller
+GUI --> Penjual: 11. Tampilkan notifikasi\n"Barang berhasil ditambahkan"
+deactivate GUI
+
+alt Data barang tidak valid
+    Penjual -> GUI: 1a. Mengisi data barang yang tidak valid
+    Penjual -> GUI: 2a. Menekan tombol Simpan Barang
+    GUI -> Controller: 3a. Mengirim data ke controller
+    activate Controller
+    Controller -> Controller: 4a. Validasi dan menemukan error
+    Controller --> GUI: 5a. Data tidak valid
+    deactivate Controller
+    GUI --> Penjual: 6a. Menampilkan pesan error validasi
+else File foto tidak valid
+    Penjual -> GUI: 1b. Upload foto dengan format/ukuran salah
+    Penjual -> GUI: 2b. Menekan tombol Simpan Barang
+    GUI -> Controller: 3b. Mengirim data ke controller
+    activate Controller
+    Controller -> Controller: 4b. Validasi file dan menemukan error
+    Controller --> GUI: 5b. File tidak valid
+    deactivate Controller
+    GUI --> Penjual: 6b. Menampilkan pesan\n"Format/ukuran file tidak valid"
+end
+
+@enduml

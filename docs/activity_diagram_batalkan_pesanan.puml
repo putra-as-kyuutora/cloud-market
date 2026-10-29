@@ -1,0 +1,56 @@
+@startuml Batalkan_Pesanan
+title Batalkan Pesanan (Pembeli)
+
+|Aktor|
+start
+:Membuka detail pesanan
+atau halaman pembayaran;
+
+|Sistem|
+:Cek status pesanan;
+
+if (Status = Menunggu Pembayaran
+OR Ditolak?) then (ya)
+  :Tampilkan tombol
+  Batalkan Pesanan;
+  
+  |Aktor|
+  :Klik tombol
+  Batalkan Pesanan;
+  
+  |Sistem|
+  :Tampilkan dialog konfirmasi
+  "Yakin batalkan pesanan?
+  Stok barang akan dikembalikan";
+  
+  |Aktor|
+  if (Pilihan?) then (Tidak)
+    :Tutup dialog;
+  else (Ya, Batalkan)
+    |Sistem|
+    :BEGIN TRANSACTION;
+    :Ambil semua item pesanan;
+    
+    repeat
+      :Kembalikan stok per item;
+    repeat while (Masih ada item?) is (ya) not (tidak)
+    
+    :Set status pembayaran = 'Dibatalkan'
+    dan kembalikan stok semua item;
+    
+    :COMMIT transaction;
+    
+    :Tampilkan notifikasi
+    "Pesanan berhasil dibatalkan.
+    Stok barang dikembalikan";
+  endif
+else (tidak)
+  :Tidak tampilkan tombol batal;
+  :Tampilkan info
+  "Pesanan tidak dapat dibatalkan
+  (status: {status})";
+endif
+
+stop
+
+@enduml

@@ -1,0 +1,73 @@
+@startuml Tolak_Pembayaran_Penjual
+title Tolak Pembayaran (Penjual)
+
+|Aktor|
+start
+:Membuka detail pesanan
+dengan status
+"Menunggu Konfirmasi";
+
+|Sistem|
+:Tampilkan preview
+bukti pembayaran
+dan tombol Tolak;
+
+|Aktor|
+:Memeriksa bukti
+transfer dan menemukan
+ketidaksesuaian;
+
+:Klik tombol
+Tolak Pembayaran;
+
+|Sistem|
+:Tampilkan modal
+dengan form;
+
+|Aktor|
+if (Pilih aksi?) then (Batal)
+  :Tutup modal;
+else (Isi alasan)
+  repeat
+    :Mengisi alasan penolakan;
+    
+    |Sistem|
+    :Validasi alasan;
+    
+    if (Alasan valid?) is (tidak) then
+      if (Kosong?) then (ya)
+        :Tampilkan error
+        "Alasan penolakan wajib diisi";
+      else (Terlalu singkat)
+        :Tampilkan error
+        "Alasan harus jelas
+        (minimal 10 karakter)";
+      endif
+    endif
+  repeat while (Alasan valid?) is (tidak) not (ya)
+  
+  |Aktor|
+  :Klik tombol
+  Kirim Penolakan;
+  
+  |Sistem|
+  :Validasi transaksi dan
+  status = 'Menunggu Konfirmasi';
+  
+  if (Valid?) then (tidak)
+    :Tampilkan error
+    "Tidak dapat tolak";
+  else (ya)
+    :Set status pembayaran = 'Ditolak'
+    dan simpan alasan penolakan;
+    
+    :Tampilkan notifikasi
+    "Pembayaran ditolak.
+    Pembeli akan diminta
+    upload bukti baru";
+  endif
+endif
+
+stop
+
+@enduml

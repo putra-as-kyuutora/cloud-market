@@ -1,0 +1,73 @@
+@startuml Konfirmasi_Pembayaran_Penjual
+title Konfirmasi Pembayaran (Penjual)
+
+|Aktor|
+start
+:Membuka daftar pesanan
+dengan status
+'Menunggu Konfirmasi';
+
+|Sistem|
+:Menampilkan list pesanan
+dengan preview bukti bayar;
+
+|Aktor|
+:Memilih pesanan dan
+klik Detail;
+
+|Sistem|
+:Menampilkan detail pesanan
+dengan preview bukti
+pembayaran (foto besar);
+
+|Aktor|
+:Memeriksa bukti transfer
+(nominal, tanggal, rekening);
+
+if (Bukti valid?) then (Tidak)
+  |Aktor|
+  repeat
+    :Mengisi alasan penolakan;
+    
+    |Sistem|
+    :Sistem validasi alasan
+    (min 10 karakter);
+    
+    if (Valid?) is (tidak) then
+      :Tampilkan error
+      "Alasan terlalu singkat";
+    endif
+  repeat while (Valid?) is (tidak) not (ya)
+  
+  |Aktor|
+  :Klik tombol
+  Tolak Pembayaran;
+  
+  |Sistem|
+  :Set status pembayaran = 'Ditolak'
+  dan simpan alasan penolakan;
+  :Menampilkan notifikasi
+  "Pembayaran ditolak";
+else (Ya)
+  |Aktor|
+  :Klik tombol
+  Konfirmasi Pembayaran;
+  
+  |Sistem|
+  :Menampilkan dialog
+  konfirmasi;
+  
+  |Aktor|
+  :Klik Ya, Konfirmasi;
+  
+  |Sistem|
+  :Set status pembayaran = 'Sudah Dibayar'
+  dan status pengiriman = 'Belum Dikirim';
+  :Menampilkan notifikasi
+  "Pembayaran dikonfirmasi.
+  Segera kirim barang";
+endif
+
+stop
+
+@enduml

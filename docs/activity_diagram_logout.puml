@@ -1,0 +1,37 @@
+@startuml Logout
+title Logout
+
+|Aktor|
+start
+:Klik tombol/menu Logout
+dari navbar atau
+dropdown profil;
+
+|Sistem|
+:Tampilkan dialog konfirmasi
+"Yakin ingin keluar?";
+
+|Aktor|
+if (Pilihan?) then (Batal)
+  |Sistem|
+  :Tutup dialog;
+  :Tetap di halaman saat ini;
+else (Ya, Keluar)
+  |Sistem|
+  :POST ke /logout;
+  :Hapus semua session data:
+  - session_destroy()
+  - Hapus session user ID
+  - Hapus session role flags;
+  
+  :Redirect ke halaman login
+  atau beranda;
+  
+  :Tampilkan notifikasi
+  "Anda telah logout.
+  Sampai jumpa!";
+endif
+
+stop
+
+@enduml

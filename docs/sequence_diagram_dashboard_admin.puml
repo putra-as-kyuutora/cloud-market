@@ -1,0 +1,70 @@
+@startuml Sequence_Dashboard_Admin
+title Sequence Diagram - Dashboard Admin
+
+actor "Admin" as Admin
+boundary "Halaman Dashboard Admin" as GUI
+control "DashboardAdminController" as Controller
+entity "Tabel User" as DB_User
+entity "Tabel Barang" as DB_Barang
+entity "Tabel Transaksi" as DB_Transaksi
+entity "Tabel Kategori" as DB_Kategori
+entity "Tabel seller_profiles" as DB_Seller
+
+Admin -> GUI: 1. Login sebagai Admin atau akses /admin/dashboard
+activate GUI
+GUI -> Controller: 2. Request data dashboard
+activate Controller
+
+Controller -> Controller: 3. Cek user adalah Admin
+
+Controller -> DB_User: 4. Query statistik pengguna
+activate DB_User
+DB_User --> Controller: 5. Total Pengguna, Total Penjual Aktif
+deactivate DB_User
+
+Controller -> DB_Seller: 6. Query pengajuan verifikasi pending
+activate DB_Seller
+DB_Seller --> Controller: 7. Penjual Pending KYC
+deactivate DB_Seller
+
+Controller -> DB_Barang: 8. Query statistik barang
+activate DB_Barang
+DB_Barang --> Controller: 9. Total Barang Aktif
+deactivate DB_Barang
+
+Controller -> DB_Transaksi: 10. Query statistik transaksi
+activate DB_Transaksi
+DB_Transaksi --> Controller: 11. Transaksi Selesai, Transaksi Menunggu
+deactivate DB_Transaksi
+
+Controller -> DB_Kategori: 12. Query jumlah kategori
+activate DB_Kategori
+DB_Kategori --> Controller: 13. Total Kategori
+deactivate DB_Kategori
+
+Controller -> DB_Transaksi: 14. Query 5 transaksi terbaru
+activate DB_Transaksi
+DB_Transaksi --> Controller: 15. Data transaksi terbaru
+deactivate DB_Transaksi
+
+Controller -> DB_Seller: 16. Query 5 penjual baru daftar
+activate DB_Seller
+DB_Seller --> Controller: 17. Data penjual baru
+deactivate DB_Seller
+
+Controller --> GUI: 18. Kirim semua data statistik dan aktivitas
+deactivate Controller
+GUI --> Admin: 19. Tampilkan halaman dashboard dengan:\n- Stats cards (pengguna, barang, transaksi, kategori)\n- Tabel aktivitas terbaru\n- Quick actions menu
+deactivate GUI
+
+alt User bukan Admin
+    Admin -> GUI: 1a. Login dengan akun non-admin dan akses dashboard
+    GUI -> Controller: 2a. Request dashboard
+    activate Controller
+    Controller -> Controller: 3a. Cek user dan bukan admin
+    Controller --> GUI: 4a. Error 403 Akses ditolak
+    deactivate Controller
+    GUI --> Admin: 5a. Tampilkan error 403 "Akses ditolak"
+end
+
+@enduml

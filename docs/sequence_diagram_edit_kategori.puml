@@ -1,0 +1,71 @@
+@startuml Sequence_Edit_Kategori
+title Sequence Diagram - Edit Kategori (Admin)
+
+actor "Admin" as Admin
+boundary "Halaman Edit Kategori" as GUI
+control "KelolaKategoriController" as Controller
+entity "Tabel Kategori" as DB
+
+Admin -> GUI: 1. Klik tombol Edit pada kategori
+activate GUI
+GUI -> Controller: 2. Request data kategori
+activate Controller
+
+Controller -> DB: 3. Ambil data kategori dari database
+activate DB
+DB --> Controller: 4. Data kategori ditemukan
+deactivate DB
+
+Controller --> GUI: 5. Kirim data kategori
+deactivate Controller
+GUI --> Admin: 6. Redirect ke /admin/kategori/{id}/edit\nTampilkan form pre-filled
+deactivate GUI
+
+Admin -> GUI: 7. Mengubah nama kategori
+activate GUI
+Admin -> GUI: 8. Menekan tombol Simpan Perubahan
+GUI -> Controller: 9. Mengirim nama baru ke controller
+activate Controller
+
+Controller -> Controller: 10. Validasi nama:\n- Tidak kosong\n- Maksimal 100 karakter\n- Tidak duplikat dengan kategori lain
+
+Controller -> DB: 11. Perbarui nama kategori di database
+activate DB
+DB --> Controller: 12. Data berhasil diperbarui
+deactivate DB
+
+Controller --> GUI: 13. Update berhasil
+deactivate Controller
+GUI --> Admin: 14. Tampilkan notifikasi\n"Kategori berhasil diperbarui"
+deactivate GUI
+
+alt Nama kosong
+    Admin -> GUI: 1a. Menghapus nama kategori (kosong)
+    Admin -> GUI: 2a. Menekan tombol Simpan Perubahan
+    GUI -> Controller: 3a. Mengirim data ke controller
+    activate Controller
+    Controller -> Controller: 4a. Validasi dan menemukan error
+    Controller --> GUI: 5a. Nama kosong
+    deactivate Controller
+    GUI --> Admin: 6a. Tampilkan error "Nama wajib diisi"
+else Nama terlalu panjang
+    Admin -> GUI: 1b. Mengubah nama > 100 karakter
+    Admin -> GUI: 2b. Menekan tombol Simpan Perubahan
+    GUI -> Controller: 3b. Mengirim data ke controller
+    activate Controller
+    Controller -> Controller: 4b. Validasi dan menemukan error
+    Controller --> GUI: 5b. Nama terlalu panjang
+    deactivate Controller
+    GUI --> Admin: 6b. Tampilkan error "Maksimal 100 karakter"
+else Duplikat dengan kategori lain
+    Admin -> GUI: 1c. Mengubah nama menjadi nama yang sudah digunakan
+    Admin -> GUI: 2c. Menekan tombol Simpan Perubahan
+    GUI -> Controller: 3c. Mengirim data ke controller
+    activate Controller
+    Controller -> Controller: 4c. Validasi dan menemukan duplikat
+    Controller --> GUI: 5c. Nama sudah digunakan
+    deactivate Controller
+    GUI --> Admin: 6c. Tampilkan error\n"Nama sudah digunakan kategori lain"
+end
+
+@enduml

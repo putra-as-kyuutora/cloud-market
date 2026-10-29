@@ -1,0 +1,68 @@
+@startuml Sequence_Login
+title Sequence Diagram - Login
+
+actor "User" as User
+boundary "Halaman Login" as GUI
+control "LoginController" as Controller
+entity "Tabel User" as DB
+
+User -> GUI: 1. Mengisi username/email dan password
+activate GUI
+User -> GUI: 2. Menekan tombol Login
+GUI -> Controller: 3. Mengirim data login ke controller
+activate Controller
+
+Controller -> Controller: 4. Validasi format data
+
+Controller -> DB: 5. Cek kredensial di database
+activate DB
+DB --> Controller: 6. Data user ditemukan
+deactivate DB
+
+Controller -> Controller: 7. Verifikasi password
+
+Controller -> Controller: 8. Cek status akun aktif
+
+Controller -> Controller: 9. Membuat session user
+
+Controller --> GUI: 10. Login berhasil
+deactivate Controller
+GUI --> User: 11. Redirect ke dashboard sesuai role
+deactivate GUI
+
+alt Data login tidak valid
+    User -> GUI: 1a. Mengisi data login yang tidak valid
+    User -> GUI: 2a. Menekan tombol Login
+    GUI -> Controller: 3a. Mengirim data ke controller
+    activate Controller
+    Controller -> Controller: 4a. Validasi format dan menemukan error
+    Controller --> GUI: 5a. Data tidak valid
+    deactivate Controller
+    GUI --> User: 6a. Menampilkan pesan error validasi
+else Akun tidak ditemukan
+    User -> GUI: 1b. Mengisi username/email yang tidak terdaftar
+    User -> GUI: 2b. Menekan tombol Login
+    GUI -> Controller: 3b. Mengirim data ke controller
+    activate Controller
+    Controller -> DB: 4b. Cek kredensial di database
+    activate DB
+    DB --> Controller: 5b. Akun tidak ditemukan
+    deactivate DB
+    Controller --> GUI: 6b. Akun tidak ditemukan
+    deactivate Controller
+    GUI --> User: 7b. Menampilkan pesan "Akun tidak ditemukan"
+else Akun dinonaktifkan
+    User -> GUI: 1c. Login dengan akun yang dinonaktifkan
+    User -> GUI: 2c. Menekan tombol Login
+    GUI -> Controller: 3c. Mengirim data ke controller
+    activate Controller
+    Controller -> DB: 4c. Cek kredensial dan status akun
+    activate DB
+    DB --> Controller: 5c. Akun ditemukan tapi is_active = 0
+    deactivate DB
+    Controller --> GUI: 6c. Akun dinonaktifkan
+    deactivate Controller
+    GUI --> User: 7c. Menampilkan pesan "Akun dinonaktifkan"
+end
+
+@enduml

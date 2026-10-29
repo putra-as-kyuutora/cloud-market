@@ -1,0 +1,69 @@
+@startuml Sequence_Hapus_Riwayat_Chat
+title Sequence Diagram - Hapus Riwayat Chat
+
+actor "User" as User
+boundary "Halaman Daftar Chat" as GUI
+control "PesanController" as Controller
+entity "Tabel Pesan" as DB
+
+User -> GUI: 1. Berada di halaman /pesan
+activate GUI
+GUI --> User: 2. Tampilkan list partner chat dengan\nmenu konteks (⋮) per item
+deactivate GUI
+
+User -> GUI: 3. Klik icon ⋮ atau tombol hapus\npada konversasi dengan partner tertentu
+activate GUI
+GUI --> User: 4. Tampilkan menu dropdown dengan opsi "Hapus Chat"
+deactivate GUI
+
+User -> GUI: 5. Klik "Hapus Chat"
+activate GUI
+GUI --> User: 6. Tampilkan dialog konfirmasi\n"Hapus riwayat chat dengan {namaPartner}?\nChat ini hanya akan dihapus dari akun Anda"
+deactivate GUI
+
+User -> GUI: 7. Klik Hapus
+activate GUI
+GUI -> Controller: 8. Request hapus chat dengan {partnerId}
+activate Controller
+
+Controller -> Controller: 9. Validasi user login dan partner exist
+
+Controller -> DB: 10. Cek ada riwayat chat
+activate DB
+DB --> Controller: 11. Riwayat ditemukan
+deactivate DB
+
+Controller -> DB: 12. Tandai pesan sebagai dihapus\ndari sisi user yang sedang login
+activate DB
+DB --> Controller: 13. Data berhasil diperbarui
+deactivate DB
+
+Controller -> DB: 14. Sembunyikan pesan ini dari\nlist chat user saat ini
+activate DB
+DB --> Controller: 15. Update berhasil
+deactivate DB
+
+Controller --> GUI: 16. Hapus berhasil
+deactivate Controller
+GUI --> User: 17. Tampilkan notifikasi\n"Riwayat chat dihapus dari akun Anda"\nReload /pesan tanpa konversasi yang dihapus
+deactivate GUI
+
+alt User klik Batal
+    User -> GUI: 1a. Klik "Hapus Chat"
+    GUI --> User: 2a. Tampilkan dialog konfirmasi
+    User -> GUI: 3a. Klik Batal
+    GUI --> User: 4a. Tutup dialog, tidak ada perubahan
+else Tidak ada riwayat chat
+    User -> GUI: 1b. Klik hapus pada partner tanpa riwayat
+    GUI -> Controller: 2b. Request hapus chat
+    activate Controller
+    Controller -> DB: 3b. Cek riwayat chat
+    activate DB
+    DB --> Controller: 4b. Tidak ada riwayat
+    deactivate DB
+    Controller --> GUI: 5b. Tidak ada riwayat
+    deactivate Controller
+    GUI --> User: 6b. Tampilkan info\n"Tidak ada riwayat chat yang perlu dihapus"
+end
+
+@enduml

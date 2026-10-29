@@ -1,0 +1,52 @@
+@startuml Sequence_Barang_Saya
+title Sequence Diagram - Lihat Barang Saya (Penjual)
+
+actor "Penjual" as Penjual
+boundary "Halaman Barang Saya" as GUI
+control "BarangSayaController" as Controller
+entity "Tabel Barang" as DB
+
+Penjual -> GUI: 1. Mengakses menu Barang Saya
+activate GUI
+GUI -> Controller: 2. Request list barang milik penjual
+activate Controller
+
+Controller -> Controller: 3. Cek apakah user adalah Penjual approved
+
+Controller -> DB: 4. Ambil daftar barang milik penjual\nyang sedang login
+activate DB
+DB --> Controller: 5. Data barang ditemukan
+deactivate DB
+
+Controller --> GUI: 6. Kirim list barang
+deactivate Controller
+GUI --> Penjual: 7. Tampilkan list barang dengan:\n- Foto, Nama, Harga, Stok, Status\n- Tombol Edit & Hapus
+deactivate GUI
+
+Penjual -> GUI: 8. Klik tombol Edit atau Hapus
+activate GUI
+GUI --> Penjual: 9. Redirect ke halaman edit/hapus barang
+deactivate GUI
+
+alt Penjual tidak approved
+    Penjual -> GUI: 1a. Akses menu Barang Saya (belum approved)
+    GUI -> Controller: 2a. Request list barang
+    activate Controller
+    Controller -> Controller: 3a. Cek status penjual dan tidak approved
+    Controller --> GUI: 4a. Error 403 Akses ditolak
+    deactivate Controller
+    GUI --> Penjual: 5a. Tampilkan error 403 "Akses ditolak"
+else Belum ada barang
+    Penjual -> GUI: 1b. Akses menu Barang Saya (belum tambah barang)
+    GUI -> Controller: 2b. Request list barang
+    activate Controller
+    Controller -> DB: 3b. Query barang milik penjual
+    activate DB
+    DB --> Controller: 4b. Tidak ada data barang
+    deactivate DB
+    Controller --> GUI: 5b. List kosong
+    deactivate Controller
+    GUI --> Penjual: 6b. Tampilkan empty state\n"Belum ada barang. Tambahkan barang pertama"
+end
+
+@enduml

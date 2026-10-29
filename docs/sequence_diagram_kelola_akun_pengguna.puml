@@ -1,0 +1,96 @@
+@startuml Sequence_Kelola_Akun_Pengguna
+title Sequence Diagram - Kelola Akun Pengguna (Admin)
+
+actor "Admin" as Admin
+boundary "Halaman Kelola Pengguna" as GUI
+control "KelolaAkunPenggunaController" as Controller
+entity "Tabel User" as DB
+
+Admin -> GUI: 1. Mengakses menu Kelola Pengguna
+activate GUI
+GUI -> Controller: 2. Request list akun pengguna
+activate Controller
+
+Controller -> Controller: 3. Cek user adalah Admin
+
+Controller -> DB: 4. Ambil daftar semua akun pengguna dari database
+activate DB
+DB --> Controller: 5. Data pengguna ditemukan
+deactivate DB
+
+Controller --> GUI: 6. Kirim list pengguna
+deactivate Controller
+GUI --> Admin: 7. Tampilkan halaman Kelola Pengguna dengan:\n- Form pencarian & filter\n- Tabel pengguna (nama, email, role, status)
+deactivate GUI
+
+Admin -> GUI: 8. Mengisi keyword pencarian dan/atau memilih filter role
+activate GUI
+Admin -> GUI: 9. Klik tombol Cari
+GUI -> Controller: 10. Request filter dengan keyword dan role
+activate Controller
+
+Controller -> DB: 11. Filter pengguna berdasarkan\nkeyword (nama/email) dan role yang dipilih
+activate DB
+DB --> Controller: 12. Data pengguna filtered ditemukan
+deactivate DB
+
+Controller --> GUI: 13. Kirim hasil filter
+deactivate Controller
+GUI --> Admin: 14. Tampilkan hasil filter
+deactivate GUI
+
+Admin -> GUI: 15. Klik tombol "Nonaktifkan Akun"
+activate GUI
+GUI --> Admin: 16. Tampilkan dialog konfirmasi\n"Nonaktifkan akun {nama}?\nPengguna tidak dapat login"
+deactivate GUI
+
+Admin -> GUI: 17. Klik Konfirmasi
+activate GUI
+GUI -> Controller: 18. Request nonaktifkan akun
+activate Controller
+
+Controller -> Controller: 19. Validasi akun bukan admin
+
+Controller -> DB: 20. Set status akun menjadi nonaktif (is_active = 0)
+activate DB
+DB --> Controller: 21. Status berhasil diperbarui
+deactivate DB
+
+Controller --> GUI: 22. Nonaktifkan berhasil
+deactivate Controller
+GUI --> Admin: 23. Tampilkan notifikasi\n"Akun {nama} berhasil dinonaktifkan"
+deactivate GUI
+
+alt User bukan Admin
+    Admin -> GUI: 1a. Akses menu dengan akun non-admin
+    GUI -> Controller: 2a. Request list pengguna
+    activate Controller
+    Controller -> Controller: 3a. Cek user dan bukan admin
+    Controller --> GUI: 4a. Error 403 Akses ditolak
+    deactivate Controller
+    GUI --> Admin: 5a. Tampilkan error 403 "Akses ditolak"
+else Tidak ada hasil filter
+    Admin -> GUI: 1b. Filter dengan keyword tidak ada hasilnya
+    GUI -> Controller: 2b. Request filter
+    activate Controller
+    Controller -> DB: 3b. Query dengan filter
+    activate DB
+    DB --> Controller: 4b. Tidak ada hasil
+    deactivate DB
+    Controller --> GUI: 5b. List kosong
+    deactivate Controller
+    GUI --> Admin: 6b. Tampilkan "Tidak ada pengguna yang sesuai"
+else Aktifkan akun
+    Admin -> GUI: 1c. Klik tombol "Aktifkan Akun"
+    GUI -> Controller: 2c. Request aktifkan akun
+    activate Controller
+    Controller -> DB: 3c. Set status akun menjadi aktif (is_active = 1)
+    activate DB
+    DB --> Controller: 4c. Status berhasil diperbarui
+    deactivate DB
+    Controller --> GUI: 5c. Aktifkan berhasil
+    deactivate Controller
+    GUI --> Admin: 6c. Tampilkan notifikasi\n"Akun {nama} berhasil diaktifkan kembali"
+end
+
+@enduml

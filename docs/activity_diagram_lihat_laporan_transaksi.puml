@@ -1,0 +1,57 @@
+@startuml Lihat_Laporan_Transaksi
+title Lihat Laporan Transaksi (Admin)
+
+|Aktor|
+start
+:Mengakses menu
+Laporan Transaksi;
+
+|Sistem|
+:Cek user adalah Admin;
+
+if (Admin?) then (tidak)
+  :Tampilkan error 403;
+else (ya)
+  :Ambil data laporan transaksi
+  dari database;
+  
+  :Tampilkan halaman laporan
+  dengan:
+  - Form filter (tanggal, status)
+  - Tombol Export
+  - Tabel transaksi (detail);
+  
+  |Aktor|
+  if (Gunakan filter?) then (ya)
+    :Memilih filter tanggal
+    dan/atau status;
+    :Klik tombol Tampilkan;
+    
+    |Sistem|
+    :Filter transaksi berdasarkan
+    rentang tanggal dan status
+    yang dipilih;
+    :Tampilkan hasil filter;
+  else (tidak)
+    :Tampilkan semua transaksi;
+  endif
+  
+  |Aktor|
+  if (Export laporan?) then (ya)
+    |Sistem|
+    :Generate file Excel/CSV
+    dengan data transaksi;
+    :Download file;
+  else (Lihat detail?)
+    if (ya) then (ya)
+      |Sistem|
+      :Redirect ke
+      /admin/laporan/{id};
+    else (tidak)
+    endif
+  endif
+endif
+
+stop
+
+@enduml

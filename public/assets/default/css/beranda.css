@@ -1,0 +1,565 @@
+/* ===== CLOUD MARKET - Beranda Full-Frame CSS =====
+   Desain 1994px, diskalakan via JS ke lebar layar.
+   Semua class di sini hanya aktif di dalam .frame (tidak bocor ke halaman lain). */
+
+/* Import font Orbitron untuk disp jika belum di-cache Google Fonts */
+.beranda-body {
+  margin: 0; padding: 0;
+  background: #EFEFEF;
+  overflow-x: hidden;
+  font-family: 'Onest', system-ui, sans-serif;
+  display: flex;
+  flex-direction: column; /* header di atas, b-viewport mengisi sisa */
+  min-height: 100vh;
+}
+.beranda-body * { box-sizing: border-box; }
+.beranda-body a { color: inherit; text-decoration: none; }
+.beranda-body a:hover { text-decoration: none; } /* Cegah garis bawah a:hover dari app.css */
+
+/* Netralkan margin default h1, h2, h3, p dari app.css di dalam frame */
+.b-frame h1,
+.b-frame h2,
+.b-frame h3,
+.b-frame p {
+  margin: 0;
+}
+
+/* Viewport & Frame */
+.b-viewport { width: 100%; position: relative; }
+.b-frame {
+  position: absolute; left: 0; top: 0;
+  width: 1994px; height: 3568px;
+  background: #EFEFEF;
+  transform-origin: 0 0;
+  overflow: hidden;
+  font-family: 'Onest', sans-serif;
+  color: #313131;
+}
+.b-abs { position: absolute; }
+.b-disp {
+  font-family: 'Orbitron', 'Arial Black', sans-serif;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+/* ===== NAVBAR (placeholder lama — kini dihandle global header) ===== */
+/* .b-atas tidak dirender lagi, placeholder dihilangkan */
+.b-atas { display: none; }
+.b-logo { left: 17px; top: 10px; width: 65px; height: 62px; object-fit: contain; }
+.b-nama-situs {
+  left: 94px; top: 24px;
+  font-size: 29px; line-height: 36px;
+  text-transform: uppercase; color: #313131;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+/* Search bar */
+.b-cari-form {
+  left: 360px; top: 10px;
+  width: 440px; height: 64px;
+  z-index: 30;
+}
+.b-cari-kotak {
+  position: absolute; inset: 0;
+  background: #F4F0F0; border-radius: 60px;
+}
+.b-cari-ikon {
+  position: absolute; left: 32px; top: 16px;
+  width: 32px; height: 32px;
+  fill: none; stroke: rgba(0,0,0,.45);
+  stroke-width: 4; stroke-linecap: round;
+}
+.b-cari-input {
+  position: absolute; left: 74px; top: 0;
+  width: 345px; height: 64px;
+  background: transparent; border: 0; outline: none;
+  font-family: 'Onest', sans-serif; font-weight: 550;
+  font-size: 24px; line-height: 38px;
+  color: #000;
+}
+.b-cari-input::placeholder { color: rgba(0,0,0,.4); }
+.b-saran {
+  position: absolute; left: 0; top: 68px; width: 440px;
+  background: #F4F0F0; border-radius: 30px;
+  padding: 16px 0 12px; list-style: none; display: none;
+  z-index: 50; box-shadow: 0 8px 32px rgba(0,0,0,.12);
+}
+.b-saran.buka { display: block; }
+.b-saran li {
+  height: 56px; padding: 0 30px;
+  display: flex; align-items: center;
+  font-weight: 550; font-size: 26px;
+  text-transform: capitalize; color: #000;
+  cursor: pointer;
+}
+.b-saran li:hover, .b-saran li.sorot { background: rgba(0,0,0,.06); }
+
+/* Nav kanan: Menu + Icons + Profil */
+.b-nav-kanan {
+  right: 28px;
+  top: 0;
+  height: 82px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  z-index: 40;
+}
+
+.b-menu-items {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+
+.b-menu-a {
+  font-family: 'Onest', sans-serif;
+  font-weight: 600;
+  font-size: 24px;
+  color: rgba(0, 0, 0, 0.65);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+
+.b-menu-a:hover {
+  color: #000000;
+}
+
+.b-menu-a.aktif {
+  color: #000000;
+  font-weight: 700;
+  border-bottom: 3px solid #000000;
+  padding-bottom: 2px;
+}
+
+.b-nav-icons {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 4px;
+}
+
+.b-ikon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: rgba(0, 0, 0, 0.7);
+  text-decoration: none;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.b-ikon-btn:hover {
+  color: #000000;
+  transform: translateY(-2px);
+}
+
+.b-svg-icon {
+  width: 32px;
+  height: 32px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.b-toko-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Onest', sans-serif;
+  font-weight: 600;
+  font-size: 24px;
+  color: #000000;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  padding: 0 4px;
+  transition: color 0.15s ease;
+}
+
+.b-toko-btn:hover {
+  color: #012CED;
+}
+
+.b-garis-v-sep {
+  width: 2px;
+  height: 36px;
+  background: rgba(0, 0, 0, 0.18);
+  margin: 0 4px;
+}
+
+.b-nav-nama {
+  font-family: 'Onest', sans-serif;
+  font-weight: 600;
+  font-size: 24px;
+  color: rgba(0, 0, 0, 0.75);
+  white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.b-nav-btn-keluar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 12px;
+  border: 2px solid #313131;
+  background: transparent;
+  color: #313131;
+  font-family: 'Onest', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.b-nav-btn-keluar:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.b-nav-btn-daftar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 22px;
+  border-radius: 12px;
+  background: #313131;
+  color: #FFFFFF;
+  font-family: 'Onest', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 0.15s ease;
+}
+
+.b-nav-btn-daftar:hover {
+  opacity: 0.9;
+}
+
+.b-nav-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #1C1C1E;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Onest', sans-serif;
+  font-weight: 700;
+  font-size: 26px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== CAROUSEL HERO ===== */
+.b-carsl {
+  left: 0; top: 82px; width: 1994px; height: 621px;
+  background: linear-gradient(95.2deg, #CACACA 0.44%, #646464 98.57%);
+}
+.b-line { left: 0; top: 82px; width: 1994px; height: 0; border-top: 4px solid #000; }
+.b-judul {
+  left: 46px; top: 259px; width: 922px;
+  font-size: 47px; line-height: 53px;
+  text-transform: uppercase; color: #313131;
+}
+.b-btn {
+  top: 393px; width: 283px; height: 72px;
+  border-radius: 20px;
+  display: flex; align-items: center;
+  font-weight: 900; font-size: 28px;
+  text-transform: capitalize; white-space: nowrap;
+  position: absolute;
+}
+.b-btn-belanja {
+  left: 46px;
+  background: #313131 !important;
+  color: #ffffff !important;
+  padding-left: 22px;
+}
+.b-btn-belanja svg {
+  stroke: #ffffff !important;
+}
+.b-btn-jualan {
+  left: 394px;
+  background: #ffffff !important;
+  color: #313131 !important;
+  padding-left: 22px;
+}
+.b-btn-jualan svg {
+  stroke: #313131 !important;
+}
+.b-btn svg {
+  position: absolute; right: 18px; top: 18px;
+  width: 32px; height: 32px; fill: none;
+  stroke: currentColor; stroke-width: 3.5;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.b-btn:hover { filter: brightness(1.12); }
+.b-sub {
+  left: 46px; top: 484px; width: 649px;
+  font-weight: 900; font-size: 28px; line-height: 38px;
+  text-transform: capitalize; color: #313131;
+}
+
+/* Kartu carousel */
+.cc, .b-cc {
+  position: absolute;
+  width: 352px;
+  height: 390px;
+  background: #fff;
+  border-radius: 30px;
+  transform-origin: center center;
+  will-change: left, top, transform, box-shadow;
+  transition:
+    left 950ms cubic-bezier(0.22, 1, 0.36, 1),
+    top 950ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 950ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 700ms ease,
+    filter 700ms ease;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.cc .foto, .b-cc .foto {
+  position: absolute; left: 14px; top: 12px; width: 321px; height: 367px; border-radius: 30px;
+  aspect-ratio: auto;
+}
+.cc .pill, .b-cc .pill {
+  position: absolute; left: 23px; top: 18px; height: 44px; border-radius: 30px; background: #fff;
+  display: flex; align-items: center; justify-content: center; font-weight: 900; text-transform: capitalize; color: #313131; white-space: nowrap;
+}
+.cc .cap, .b-cc .cap {
+  position: absolute; font-weight: 900; text-transform: capitalize; line-height: 41px; white-space: nowrap;
+  background: rgba(255,255,255,.88); border-radius: 14px; padding: 2px 10px;
+}
+
+/* Posisi kiri */
+.c-diskon, .b-c-diskon {
+  left: 891px;
+  top: 130px;
+  transform: rotate(-8.35deg);
+  z-index: 2;
+}
+.c-diskon .foto, .b-c-diskon .foto { background: linear-gradient(160deg, #E53935, #FF8F00 70%, #FFD54F); }
+.c-diskon .pill, .b-c-diskon .pill { width: 159px; font-size: 32px; }
+.c-diskon .cap,  .b-c-diskon .cap  { left: 62px; top: 342px; font-size: 32px; color: #CE0707; }
+
+/* Posisi tengah */
+.c-nego, .b-c-nego {
+  left: 1225px;
+  top: 144px;
+  z-index: 3;
+}
+.c-nego .foto, .b-c-nego .foto { background: linear-gradient(160deg, #cfcfcf, #4a4a4a); }
+.c-nego .pill, .b-c-nego .pill { width: 146px; font-size: 20px; }
+.c-nego .cap,  .b-c-nego .cap  { left: 14px; top: 336px; font-size: 32px; color: #4CAF7D; }
+
+/* Posisi kanan */
+.c-murah, .b-c-murah {
+  left: 1518px;
+  top: 130px;
+  transform: rotate(9.48deg);
+  z-index: 2;
+}
+.c-murah .foto, .b-c-murah .foto { background: repeating-linear-gradient(45deg, #FFD600 0 28px, #1d1d1d 28px 40px); }
+.c-murah .pill, .b-c-murah .pill { width: 161px; font-size: 18px; }
+.c-murah .cap,  .b-c-murah .cap  { left: 14px; top: 342px; font-size: 28px; color: #7F83DF; }
+
+/* State tengah */
+.cc.is-center, .b-cc.is-center {
+  z-index: 3 !important;
+  left: 1225px !important;
+  top: 144px !important;
+  transform: rotate(0deg) scale(1.02) !important;
+  box-shadow: 0 24px 54px rgba(0, 0, 0, .22);
+  filter: saturate(1);
+}
+
+/* State kiri */
+.cc.is-left, .b-cc.is-left {
+  z-index: 2 !important;
+  left: 891px !important;
+  top: 130px !important;
+  transform: rotate(-8.35deg) scale(.96) !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .12);
+  filter: saturate(.92);
+}
+
+/* State kanan */
+.cc.is-right, .b-cc.is-right {
+  z-index: 2 !important;
+  left: 1518px !important;
+  top: 130px !important;
+  transform: rotate(9.48deg) scale(.96) !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .12);
+  filter: saturate(.92);
+}
+
+/* Jaminan */
+.b-jaminan {
+  top: 612px; height: 58px; width: 476px;
+  border-radius: 30px; background: #E4D6D6; opacity: .6;
+}
+.b-jaminan-teks {
+  top: 626px; height: 33px;
+  font-weight: 500; font-size: 24px; line-height: 33px;
+  text-transform: capitalize; color: #313131; white-space: nowrap;
+}
+.b-jaminan-ikon {
+  top: 622px; width: 44px; height: 38px; border-radius: 50%;
+  background: #E6F9F3; display: flex; align-items: center; justify-content: center;
+}
+.b-jaminan-ikon svg {
+  width: 22px; height: 22px; fill: none;
+  stroke: #2420F5; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* ===== KATEGORI ===== */
+.b-kat {
+  top: 754px; width: 122px; height: 109px;
+  background: #D9D4D4; border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+}
+.b-kat svg {
+  width: 60px; height: 60px; fill: none;
+  stroke: #313131; stroke-width: 3.5;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.b-kat:hover { background: #cac4c4; }
+.b-kat-nama {
+  top: 882px; width: 200px; margin-left: -39px;
+  text-align: center; font-weight: 900;
+  font-size: 26px; line-height: 34px;
+  text-transform: capitalize; color: #313131;
+  white-space: nowrap;
+}
+
+/* ===== PRODUK KARTU ===== */
+.b-produk {
+  width: 439px; height: 603px;
+  background: #fff; border-radius: 50px; display: block;
+  position: absolute;
+  transition: box-shadow .2s, transform .15s;
+}
+.b-produk .gambar {
+  position: absolute; left: 19px; top: 12px;
+  width: 402px; height: 409px; border-radius: 50px;
+  background: rgba(120,120,128,.08); overflow: hidden;
+}
+.b-produk .gambar svg {
+  position: absolute; left: 50%; top: 50%;
+  width: 100px; height: 100px; margin: -50px 0 0 -50px;
+  fill: none; stroke: rgba(0,0,0,.18); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round;
+}
+.b-produk .gambar img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+}
+.b-produk .ribbon-habis {
+  position: absolute; top: 18px; left: 18px;
+  background: #b91c1c; color: #fff;
+  font-size: 20px; font-weight: 700; padding: 4px 14px; border-radius: 10px;
+}
+.b-produk .nama {
+  position: absolute; left: 35px; top: 421px; width: 380px;
+  font-weight: 410; font-size: 30px; line-height: 40px;
+  color: rgba(0,0,0,.59); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin: 0;
+}
+.b-produk .kondisi {
+  position: absolute; left: 35px; top: 463px;
+  font-weight: 400; font-size: 26px; line-height: 36px;
+  color: rgba(0,0,0,.45);
+  margin: 0;
+}
+.b-produk .harga {
+  position: absolute; right: 28px; top: 543px;
+  font-weight: 700; font-size: 28px; line-height: 38px;
+  color: #000; white-space: nowrap;
+  margin: 0;
+}
+.b-produk:hover {
+  box-shadow: 0 10px 40px rgba(0,0,0,.18);
+  transform: translateY(-4px);
+}
+
+/* Lihat lebih banyak */
+.b-lebih {
+  width: 492px; height: 113px;
+  background: rgba(255,255,255,.8); border: 5px solid #000; border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 36px; text-transform: capitalize; color: #000;
+}
+.b-lebih:hover { background: #fff; }
+
+/* Teks tengah */
+.b-aman {
+  text-align: center; font-weight: 900;
+  font-size: 60px; line-height: 76px;
+  text-transform: capitalize; color: #000;
+}
+.b-forum {
+  text-align: center; font-weight: 500;
+  font-size: 34px; line-height: 46px;
+  color: #313131;
+}
+
+/* Banner CTA */
+.b-banner {
+  left: 0; width: 1994px; height: 440px;
+  overflow: hidden;
+  background: linear-gradient(92.82deg, #000 0.18%, #4B4444 99.17%);
+}
+.b-banner-teks {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center; font-size: 60px; line-height: 72px;
+  text-transform: capitalize; color: #fff; padding: 0 200px;
+}
+.b-banner-teks span { display: block; width: 1265px; }
+
+/* Footer */
+.b-brand-foot {
+  font-weight: 400; font-size: 72px; line-height: 96px;
+  text-transform: capitalize; color: #000; white-space: nowrap;
+}
+.b-tagline {
+  font-weight: 200; font-size: 42px; line-height: 56px;
+  text-transform: capitalize; color: #000;
+}
+.b-sosial {
+  width: 76px; height: 76px;
+  fill: none; stroke: #000; stroke-width: 4.5;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.b-tautan-foot {
+  font-weight: 200; font-size: 36px; line-height: 46px;
+  text-transform: capitalize; color: #000; white-space: nowrap;
+}
+.b-tautan-foot:hover { text-decoration: underline; }
+
+/* Flash message di beranda */
+.beranda-body .alert {
+  position: fixed; top: 16px; left: 50%;
+  transform: translateX(-50%); z-index: 9999;
+  padding: 12px 28px; border-radius: 14px;
+  font-size: 20px; font-weight: 600;
+  box-shadow: 0 4px 20px rgba(0,0,0,.2);
+  white-space: nowrap;
+}
+.beranda-body .alert-ok  { background: #dcfce7; color: #15803d; }
+.beranda-body .alert-bad { background: #fee2e2; color: #b91c1c; }
+
+@media (prefers-reduced-motion: reduce) {
+  .b-cc { transition: none !important; }
+}

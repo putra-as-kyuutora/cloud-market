@@ -1,0 +1,86 @@
+@startuml Sequence_Konfirmasi_Pembayaran_Penjual
+title Sequence Diagram - Konfirmasi Pembayaran (Penjual)
+
+actor "Penjual" as Penjual
+boundary "Halaman Detail Pesanan" as GUI
+control "KonfirmasiPembayaranController" as Controller
+entity "Tabel Transaksi" as DB
+
+Penjual -> GUI: 1. Membuka daftar pesanan\ndengan status 'Menunggu Konfirmasi'
+activate GUI
+GUI -> Controller: 2. Request list pesanan
+activate Controller
+
+Controller -> DB: 3. Query pesanan dengan bukti pembayaran
+activate DB
+DB --> Controller: 4. Data pesanan ditemukan
+deactivate DB
+
+Controller --> GUI: 5. Kirim list pesanan
+deactivate Controller
+GUI --> Penjual: 6. Tampilkan list pesanan dengan preview bukti bayar
+deactivate GUI
+
+Penjual -> GUI: 7. Memilih pesanan dan klik Detail
+activate GUI
+GUI -> Controller: 8. Request detail pesanan
+activate Controller
+
+Controller -> DB: 9. Query detail pesanan dengan bukti pembayaran
+activate DB
+DB --> Controller: 10. Detail ditemukan
+deactivate DB
+
+Controller --> GUI: 11. Kirim detail pesanan
+deactivate Controller
+GUI --> Penjual: 12. Tampilkan detail pesanan dengan\npreview bukti pembayaran (foto besar)
+deactivate GUI
+
+Penjual -> Penjual: 13. Memeriksa bukti transfer\n(nominal, tanggal, rekening)
+
+Penjual -> GUI: 14. Klik tombol Konfirmasi Pembayaran
+activate GUI
+GUI --> Penjual: 15. Tampilkan dialog konfirmasi
+deactivate GUI
+
+Penjual -> GUI: 16. Klik Ya, Konfirmasi
+activate GUI
+GUI -> Controller: 17. Request konfirmasi pembayaran
+activate Controller
+
+Controller -> DB: 18. Set status pembayaran = 'Sudah Dibayar'\ndan status pengiriman = 'Belum Dikirim'
+activate DB
+DB --> Controller: 19. Status berhasil diperbarui
+deactivate DB
+
+Controller --> GUI: 20. Konfirmasi berhasil
+deactivate Controller
+GUI --> Penjual: 21. Tampilkan notifikasi\n"Pembayaran dikonfirmasi. Segera kirim barang"
+deactivate GUI
+
+alt Bukti tidak valid - Tolak Pembayaran
+    Penjual -> Penjual: 1a. Memeriksa dan menemukan bukti tidak valid
+    Penjual -> GUI: 2a. Mengisi alasan penolakan
+    Penjual -> GUI: 3a. Klik tombol Tolak Pembayaran
+    GUI -> Controller: 4a. Mengirim request tolak dengan alasan
+    activate Controller
+    Controller -> Controller: 5a. Validasi alasan (min 10 karakter)
+    Controller -> DB: 6a. Set status pembayaran = 'Ditolak'\ndan simpan alasan penolakan
+    activate DB
+    DB --> Controller: 7a. Status berhasil diperbarui
+    deactivate DB
+    Controller --> GUI: 8a. Penolakan berhasil
+    deactivate Controller
+    GUI --> Penjual: 9a. Tampilkan notifikasi "Pembayaran ditolak"
+else Alasan penolakan tidak valid
+    Penjual -> GUI: 1b. Mengisi alasan terlalu singkat
+    Penjual -> GUI: 2b. Klik tombol Tolak Pembayaran
+    GUI -> Controller: 3b. Mengirim request tolak
+    activate Controller
+    Controller -> Controller: 4b. Validasi alasan dan menemukan error
+    Controller --> GUI: 5b. Alasan terlalu singkat
+    deactivate Controller
+    GUI --> Penjual: 6b. Tampilkan error "Alasan terlalu singkat"
+end
+
+@enduml

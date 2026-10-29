@@ -1,0 +1,11 @@
+/* TEMA CONTOH "gelap": cukup impor tema default lalu timpa token warna.
+   Tidak ada satu pun file PHP yang diubah. */
+@import url('../../default/css/app.css');
+:root{
+  --bg:#0f1115; --surface:#1a1d24; --text:#e5e7eb; --muted:#9ca3af; --line:#2b303b;
+  --brand:#2563eb; --accent:#60a5fa; --hero-from:#1e3a8a; --hero-to:#0f1115;
+}
+.field input,.field select,.field textarea,.filter input,.filter select{background:#0f1115;border-color:#374151}
+th,tfoot td{background:#151820} .foto,.foto-besar{background:#232733}
+.topbar{background:#0b0d11} .topbar .btn{background:#fff;color:#111}
+.auth-card{background:rgba(26,29,36,.92)} .role-pick span{background:#2b303b}

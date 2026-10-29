@@ -1,0 +1,84 @@
+@startuml Sequence_Nego_Harga
+title Sequence Diagram - Nego Harga via Chat
+
+actor "Pembeli" as Pembeli
+boundary "Halaman Chat dengan Panel Nego" as GUI
+control "PesanController" as Controller
+entity "Tabel Pesan" as DB_Pesan
+entity "Tabel Nego" as DB_Nego
+
+Pembeli -> GUI: 1. Klik tombol "Nego Harga"\ndi halaman detail barang
+activate GUI
+GUI --> Pembeli: 2. Redirect ke\n/pesan?partner={idPenjual}&barang={id}&nego=1
+deactivate GUI
+
+Pembeli -> GUI: 3. Membuka halaman chat dengan panel nego
+activate GUI
+GUI -> Controller: 4. Request data barang dan riwayat chat
+activate Controller
+
+Controller --> GUI: 5. Kirim data barang dan chat
+deactivate Controller
+GUI --> Pembeli: 6. Tampilkan halaman chat dengan panel nego:\n- Info barang (foto, nama, harga asli)\n- Form input harga tawaran\n- Riwayat chat di bawah
+deactivate GUI
+
+Pembeli -> GUI: 7. Mengisi harga tawaran
+activate GUI
+Pembeli -> GUI: 8. Klik "Kirim Tawaran"
+GUI -> Controller: 9. Mengirim harga tawaran ke controller
+activate Controller
+
+Controller -> Controller: 10. Validasi harga tawaran\n(> 0 dan < harga asli)
+
+Controller -> DB_Nego: 11. Cek tawaran aktif untuk barang ini
+activate DB_Nego
+DB_Nego --> Controller: 12. Tidak ada tawaran pending
+deactivate DB_Nego
+
+Controller -> DB_Nego: 13. Simpan data tawaran nego\ndengan status 'pending'
+activate DB_Nego
+DB_Nego --> Controller: 14. Tawaran berhasil disimpan
+deactivate DB_Nego
+
+Controller -> DB_Pesan: 15. Kirim pesan otomatis:\n"🤝 [NEGO] {namaBarang}\n- Harga Tawaran: Rp {hargaNego}\n(dari harga Rp {hargaAsli})"
+activate DB_Pesan
+DB_Pesan --> Controller: 16. Pesan berhasil disimpan
+deactivate DB_Pesan
+
+Controller --> GUI: 17. Tawaran berhasil dikirim
+deactivate Controller
+GUI --> Pembeli: 18. Tampilkan notifikasi\n"Tawaran dikirim. Menunggu respons penjual"\ndan tampilkan bubble pesan nego
+deactivate GUI
+
+alt Harga tawaran tidak valid (≤ 0)
+    Pembeli -> GUI: 1a. Mengisi harga ≤ 0
+    Pembeli -> GUI: 2a. Klik "Kirim Tawaran"
+    GUI -> Controller: 3a. Mengirim data ke controller
+    activate Controller
+    Controller -> Controller: 4a. Validasi dan menemukan error
+    Controller --> GUI: 5a. Harga tidak valid
+    deactivate Controller
+    GUI --> Pembeli: 6a. Tampilkan error "Harga harus lebih dari Rp 0"
+else Harga tawaran >= harga asli
+    Pembeli -> GUI: 1b. Mengisi harga >= harga asli
+    Pembeli -> GUI: 2b. Klik "Kirim Tawaran"
+    GUI -> Controller: 3b. Mengirim data ke controller
+    activate Controller
+    Controller -> Controller: 4b. Validasi dan menemukan error
+    Controller --> GUI: 5b. Harga tawaran terlalu tinggi
+    deactivate Controller
+    GUI --> Pembeli: 6b. Tampilkan error\n"Harga tawaran harus lebih rendah dari harga asli"
+else Sudah ada tawaran pending
+    Pembeli -> GUI: 1c. Kirim tawaran baru padahal sudah ada pending
+    GUI -> Controller: 2c. Mengirim data ke controller
+    activate Controller
+    Controller -> DB_Nego: 3c. Cek tawaran aktif
+    activate DB_Nego
+    DB_Nego --> Controller: 4c. Sudah ada tawaran pending
+    deactivate DB_Nego
+    Controller --> GUI: 5c. Tawaran sudah ada
+    deactivate Controller
+    GUI --> Pembeli: 6c. Tampilkan info\n"Anda sudah punya tawaran aktif.\nTunggu respons penjual"
+end
+
+@enduml

@@ -1,0 +1,34 @@
+@startuml Registrasi_Pembeli
+title Registrasi Pembeli
+
+|Aktor|
+start
+
+repeat
+  :Mengisi nomor telepon, nama
+  lengkap, username dan
+  password;
+  
+  |Sistem|
+  :Sistem mengecek inputan
+  aktor;
+repeat while (Valid?) is (tidak) not (ya)
+
+|Aktor|
+repeat
+  :Aktor mengisi alamat
+  pengiriman lengkap;
+  
+  |Sistem|
+  :Sistem mengecek inputan
+  aktor;
+repeat while (Valid?) is (tidak) not (ya)
+
+|Aktor|
+:Menekan tombol daftar;
+
+|Sistem|
+:Simpan data ke database;
+stop
+
+@enduml

@@ -1,0 +1,69 @@
+@startuml Sequence_Lihat_Laporan_Transaksi
+title Sequence Diagram - Lihat Laporan Transaksi (Admin)
+
+actor "Admin" as Admin
+boundary "Halaman Laporan Transaksi" as GUI
+control "LihatLaporanTransaksiController" as Controller
+entity "Tabel Transaksi" as DB
+
+Admin -> GUI: 1. Mengakses menu Laporan Transaksi
+activate GUI
+GUI -> Controller: 2. Request data laporan
+activate Controller
+
+Controller -> Controller: 3. Cek user adalah Admin
+
+Controller -> DB: 4. Ambil data laporan transaksi dari database
+activate DB
+DB --> Controller: 5. Data transaksi ditemukan
+deactivate DB
+
+Controller --> GUI: 6. Kirim data laporan
+deactivate Controller
+GUI --> Admin: 7. Tampilkan halaman laporan dengan:\n- Form filter (tanggal, status)\n- Tombol Export\n- Tabel transaksi (detail lengkap)
+deactivate GUI
+
+Admin -> GUI: 8. Memilih filter tanggal dan/atau status
+activate GUI
+Admin -> GUI: 9. Klik tombol Tampilkan
+GUI -> Controller: 10. Request filter laporan
+activate Controller
+
+Controller -> DB: 11. Filter transaksi berdasarkan\nrentang tanggal dan status yang dipilih
+activate DB
+DB --> Controller: 12. Data filtered ditemukan
+deactivate DB
+
+Controller --> GUI: 13. Kirim hasil filter
+deactivate Controller
+GUI --> Admin: 14. Tampilkan hasil filter
+deactivate GUI
+
+Admin -> GUI: 15. Klik "Lihat Detail" pada transaksi
+activate GUI
+GUI --> Admin: 16. Redirect ke /admin/laporan/{id}
+deactivate GUI
+
+alt User bukan Admin
+    Admin -> GUI: 1a. Akses menu dengan akun non-admin
+    GUI -> Controller: 2a. Request laporan
+    activate Controller
+    Controller -> Controller: 3a. Cek user dan bukan admin
+    Controller --> GUI: 4a. Error 403
+    deactivate Controller
+    GUI --> Admin: 5a. Tampilkan error 403
+else Export laporan
+    Admin -> GUI: 1b. Klik tombol Export ke Excel/CSV
+    GUI -> Controller: 2b. Request export laporan
+    activate Controller
+    Controller -> DB: 3b. Ambil data transaksi sesuai filter
+    activate DB
+    DB --> Controller: 4b. Data transaksi ditemukan
+    deactivate DB
+    Controller -> Controller: 5b. Generate file Excel/CSV dengan:\n- Header kolom\n- Data transaksi (row by row)\n- Format tanggal & currency\n- Total summary
+    Controller --> GUI: 6b. Kirim file untuk download
+    deactivate Controller
+    GUI --> Admin: 7b. Browser download file\n"laporan-{date}.xlsx"
+end
+
+@enduml

@@ -1,0 +1,87 @@
+@startuml Sequence_Verifikasi_Penjual_Admin
+title Sequence Diagram - Verifikasi Penjual (Admin)
+
+actor "Admin" as Admin
+boundary "Halaman Verifikasi Penjual" as GUI
+control "VerifikasiPenjualController" as Controller
+entity "Tabel seller_profiles" as DB_Seller
+entity "Tabel User" as DB_User
+
+Admin -> GUI: 1. Membuka daftar pengajuan verifikasi penjual
+activate GUI
+GUI -> Controller: 2. Request list pengajuan pending
+activate Controller
+
+Controller -> DB_Seller: 3. Query pengajuan dengan status 'pending'
+activate DB_Seller
+DB_Seller --> Controller: 4. Data pengajuan ditemukan
+deactivate DB_Seller
+
+Controller --> GUI: 5. Kirim list pengajuan
+deactivate Controller
+GUI --> Admin: 6. Tampilkan list pengajuan
+deactivate GUI
+
+Admin -> GUI: 7. Memilih pengajuan dan klik Review
+activate GUI
+GUI -> Controller: 8. Request detail pengajuan
+activate Controller
+
+Controller -> DB_Seller: 9. Query detail pengajuan
+activate DB_Seller
+DB_Seller --> Controller: 10. Detail pengajuan ditemukan
+deactivate DB_Seller
+
+Controller --> GUI: 11. Kirim detail pengajuan
+deactivate Controller
+GUI --> Admin: 12. Tampilkan detail pengajuan:\n- Info calon penjual, NIK, Foto KTP, Foto Selfie
+deactivate GUI
+
+Admin -> GUI: 13. Memeriksa dokumen KYC
+Admin -> GUI: 14. Klik tombol Approve
+activate GUI
+GUI -> Controller: 15. Request approve pengajuan
+activate Controller
+
+Controller -> DB_Seller: 16. BEGIN TRANSACTION
+activate DB_Seller
+Controller -> DB_Seller: 17. Set status verifikasi 'approved'\ndan catat admin yang approve
+Controller -> DB_User: 18. Aktifkan flag is_seller pada akun user
+activate DB_User
+DB_User --> Controller: 
+deactivate DB_User
+Controller -> DB_Seller: 19. COMMIT
+DB_Seller --> Controller: 20. Transaksi berhasil
+deactivate DB_Seller
+
+Controller --> GUI: 21. Approve berhasil
+deactivate Controller
+GUI --> Admin: 22. Tampilkan notifikasi\n"Pengajuan approved. Akun penjual aktif"
+deactivate GUI
+
+alt Dokumen tidak valid - Reject
+    Admin -> GUI: 1a. Memeriksa dan menemukan dokumen tidak valid
+    Admin -> GUI: 2a. Mengisi alasan penolakan
+    Admin -> GUI: 3a. Klik tombol Reject
+    GUI -> Controller: 4a. Mengirim request reject dengan alasan
+    activate Controller
+    Controller -> Controller: 5a. Validasi alasan (min 10 karakter)
+    Controller -> DB_Seller: 6a. Simpan status verifikasi 'rejected'\nbeserta alasan penolakan dan ID admin
+    activate DB_Seller
+    DB_Seller --> Controller: 7a. Data berhasil disimpan
+    deactivate DB_Seller
+    Controller --> GUI: 8a. Reject berhasil
+    deactivate Controller
+    GUI --> Admin: 9a. Tampilkan notifikasi "Pengajuan ditolak"
+else Alasan penolakan tidak valid
+    Admin -> GUI: 1b. Mengisi alasan terlalu singkat
+    Admin -> GUI: 2b. Klik tombol Reject
+    GUI -> Controller: 3b. Mengirim request reject
+    activate Controller
+    Controller -> Controller: 4b. Validasi alasan dan menemukan error
+    Controller --> GUI: 5b. Alasan terlalu singkat
+    deactivate Controller
+    GUI --> Admin: 6b. Tampilkan error "Alasan harus jelas"
+end
+
+@enduml

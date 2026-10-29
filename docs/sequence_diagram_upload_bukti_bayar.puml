@@ -1,0 +1,80 @@
+@startuml Sequence_Upload_Bukti_Bayar
+title Sequence Diagram - Upload Bukti Pembayaran (Pembeli)
+
+actor "Pembeli" as Pembeli
+boundary "Halaman Pembayaran" as GUI
+control "PembayaranController" as Controller
+entity "Tabel Transaksi" as DB
+
+Pembeli -> GUI: 1. Membuka halaman pembayaran pesanan
+activate GUI
+GUI -> Controller: 2. Request data transaksi
+activate Controller
+
+Controller -> DB: 3. Ambil data transaksi dari database
+activate DB
+DB --> Controller: 4. Data transaksi ditemukan
+deactivate DB
+
+Controller -> Controller: 5. Cek status valid untuk upload\n(Menunggu Pembayaran atau Ditolak)
+
+Controller --> GUI: 6. Kirim data transaksi dan info rekening
+deactivate Controller
+GUI --> Pembeli: 7. Tampilkan halaman pembayaran:\n- Detail pesanan & total\n- Info rekening/QRIS\n- Form upload bukti
+deactivate GUI
+
+Pembeli -> Pembeli: 8. Melakukan transfer ke rekening tujuan
+
+Pembeli -> GUI: 9. Upload foto bukti transfer
+activate GUI
+Pembeli -> GUI: 10. Menekan tombol Kirim Bukti Pembayaran
+GUI -> Controller: 11. Mengirim file bukti ke controller
+activate Controller
+
+Controller -> Controller: 12. Validasi file (format, ukuran, MIME)
+
+Controller -> Controller: 13. Simpan file ke /uploads/bukti/\ndengan nama random
+
+Controller -> DB: 14. Set status pembayaran = 'Menunggu Konfirmasi'\ndan simpan path bukti transfer
+activate DB
+DB --> Controller: 15. Data berhasil diperbarui
+deactivate DB
+
+Controller --> GUI: 16. Upload berhasil
+deactivate Controller
+GUI --> Pembeli: 17. Tampilkan notifikasi\n"Bukti pembayaran berhasil dikirim.\nMenunggu konfirmasi penjual"
+deactivate GUI
+
+alt Transaksi tidak ditemukan
+    Pembeli -> GUI: 1a. Akses pembayaran dengan ID transaksi invalid
+    GUI -> Controller: 2a. Request data transaksi
+    activate Controller
+    Controller -> DB: 3a. Query transaksi
+    activate DB
+    DB --> Controller: 4a. Transaksi tidak ditemukan
+    deactivate DB
+    Controller --> GUI: 5a. Error 404
+    deactivate Controller
+    GUI --> Pembeli: 6a. Tampilkan error 404 "Pesanan tidak ditemukan"
+else Status tidak valid untuk upload
+    Pembeli -> GUI: 1b. Akses pembayaran pesanan yang sudah dibayar
+    GUI -> Controller: 2b. Request data transaksi
+    activate Controller
+    Controller -> DB: 3b. Query transaksi
+    activate DB
+    DB --> Controller: 4b. Status = 'Sudah Dibayar'
+    deactivate DB
+    Controller --> GUI: 5b. Status tidak valid
+    deactivate Controller
+    GUI --> Pembeli: 6b. Tampilkan info\n"Pesanan sudah dibayar atau tidak dapat upload"
+else File tidak valid
+    Pembeli -> GUI: 1c. Upload file dengan format/ukuran salah
+    GUI -> Controller: 2c. Mengirim file ke controller
+    activate Controller
+    Controller -> Controller: 3c. Validasi file dan menemukan error
+    Controller --> GUI: 4c. File tidak valid
+    deactivate Controller
+    GUI --> Pembeli: 5c. Menampilkan error\n"Format harus JPG/PNG, maksimal 2MB"
+end
+
+@enduml

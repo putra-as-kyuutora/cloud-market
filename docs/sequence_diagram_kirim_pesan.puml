@@ -1,0 +1,80 @@
+@startuml Sequence_Kirim_Pesan
+title Sequence Diagram - Kirim Pesan (Chat)
+
+actor "User" as User
+boundary "Halaman Chat" as GUI
+control "PesanController" as Controller
+entity "Tabel Pesan" as DB
+
+User -> GUI: 1. Mengakses halaman chat\n/pesan?partner={idPartner}
+activate GUI
+GUI -> Controller: 2. Request validasi dan riwayat chat
+activate Controller
+
+Controller -> Controller: 3. Validasi user login dan partner exist
+Controller -> Controller: 4. Validasi partner bukan diri sendiri
+
+Controller -> DB: 5. Ambil riwayat percakapan\nantara user dan partner
+activate DB
+DB --> Controller: 6. Data riwayat chat ditemukan
+deactivate DB
+
+Controller --> GUI: 7. Kirim data chat
+deactivate Controller
+GUI --> User: 8. Tampilkan halaman chat dengan riwayat
+deactivate GUI
+
+User -> GUI: 9. Mengetik pesan di textarea
+activate GUI
+User -> GUI: 10. Menekan tombol Kirim atau Enter
+GUI -> Controller: 11. Mengirim isi pesan ke controller
+activate Controller
+
+Controller -> Controller: 12. Validasi isi pesan (tidak kosong, max 1000 karakter)
+
+Controller -> DB: 13. Simpan pesan baru ke database\ndengan timestamp saat ini
+activate DB
+DB --> Controller: 14. Pesan berhasil disimpan
+deactivate DB
+
+Controller --> GUI: 15. Pesan berhasil dikirim
+deactivate Controller
+GUI --> User: 16. Append bubble pesan baru\nKosongkan textarea\nAuto-scroll ke pesan terbaru
+deactivate GUI
+
+alt User tidak login
+    User -> GUI: 1a. Akses halaman chat tanpa login
+    GUI -> Controller: 2a. Request chat
+    activate Controller
+    Controller -> Controller: 3a. Validasi user dan tidak login
+    Controller --> GUI: 4a. User tidak login
+    deactivate Controller
+    GUI --> User: 5a. Redirect ke /login
+else Partner tidak exist
+    User -> GUI: 1b. Akses chat dengan partner ID tidak valid
+    GUI -> Controller: 2b. Request chat
+    activate Controller
+    Controller -> Controller: 3b. Validasi partner dan tidak ditemukan
+    Controller --> GUI: 4b. Partner tidak exist
+    deactivate Controller
+    GUI --> User: 5b. Tampilkan error 404
+else Chat dengan diri sendiri
+    User -> GUI: 1c. Akses chat dengan partner = diri sendiri
+    GUI -> Controller: 2c. Request chat
+    activate Controller
+    Controller -> Controller: 3c. Validasi dan partner = user
+    Controller --> GUI: 4c. Partner sama dengan user
+    deactivate Controller
+    GUI --> User: 5c. Tampilkan error\n"Tidak dapat chat dengan diri sendiri"
+else Pesan tidak valid
+    User -> GUI: 1d. Mengetik pesan kosong atau terlalu panjang
+    User -> GUI: 2d. Klik tombol Kirim
+    GUI -> Controller: 3d. Mengirim data ke controller
+    activate Controller
+    Controller -> Controller: 4d. Validasi dan menemukan error
+    Controller --> GUI: 5d. Pesan tidak valid
+    deactivate Controller
+    GUI --> User: 6d. Tampilkan error\n"Pesan tidak boleh kosong" atau\n"Pesan maksimal 1000 karakter"
+end
+
+@enduml

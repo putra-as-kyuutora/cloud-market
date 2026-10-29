@@ -1,0 +1,71 @@
+@startuml Daftar_Penjual
+title Daftar Sebagai Penjual (KYC)
+
+|Aktor|
+start
+
+repeat
+  :Mengisi nama toko dan
+  deskripsi toko;
+  
+  |Sistem|
+  :Sistem mengecek inputan
+  aktor;
+repeat while (Valid?) is (tidak) not (ya)
+
+|Aktor|
+repeat
+  :Mengisi NIK KTP
+  (16 digit);
+  
+  |Sistem|
+  :Sistem validasi format NIK;
+  
+  if (NIK Valid?) is (tidak) then
+    :Menampilkan error
+    "NIK harus 16 digit angka";
+  endif
+repeat while (NIK Valid?) is (tidak) not (ya)
+
+|Aktor|
+repeat
+  :Upload foto KTP;
+  
+  |Sistem|
+  :Sistem validasi file
+  (format, ukuran);
+  
+  if (File Valid?) is (tidak) then
+    :Menampilkan error
+    "File tidak valid";
+  endif
+repeat while (File Valid?) is (tidak) not (ya)
+
+|Aktor|
+repeat
+  :Upload foto selfie
+  dengan KTP;
+  
+  |Sistem|
+  :Sistem validasi file
+  (format, ukuran);
+  
+  if (File Valid?) is (tidak) then
+    :Menampilkan error
+    "File tidak valid";
+  endif
+repeat while (File Valid?) is (tidak) not (ya)
+
+|Aktor|
+:Menekan tombol
+Kirim Verifikasi;
+
+|Sistem|
+:Menyimpan data ke
+seller_profiles dengan
+status 'pending';
+:Menampilkan notifikasi
+"Menunggu verifikasi admin";
+stop
+
+@enduml

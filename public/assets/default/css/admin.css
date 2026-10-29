@@ -1,0 +1,413 @@
+/* ===== CLOUD MARKET - Admin Panel CSS =====
+   Berbagi arsitektur dan komponen yang sama dengan Dashboard Penjual (penjual.css). */
+
+@import url('penjual.css');
+
+/* ==================== STAT CARDS GRID (Dashboard Admin) ==================== */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: var(--pnj-surface);
+  border-radius: var(--pnj-radius);
+  box-shadow: var(--pnj-shadow);
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.09);
+}
+
+.stat-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-icon-wrap svg {
+  width: 32px;
+  height: 32px;
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.stat-icon-blue {
+  background: #EBF3FF;
+  color: #012CED;
+}
+.stat-icon-blue svg { stroke: #012CED; }
+
+.stat-icon-green {
+  background: #DCFCE7;
+  color: #0B911B;
+}
+.stat-icon-green svg { stroke: #0B911B; }
+
+.stat-icon-purple {
+  background: #F3E8FF;
+  color: #A81EF8;
+}
+.stat-icon-purple svg { stroke: #A81EF8; }
+
+.stat-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.stat-val {
+  font-family: 'Onest', sans-serif;
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: var(--pnj-text);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--pnj-muted);
+  margin-top: 4px;
+  text-transform: capitalize;
+}
+
+/* ==================== 2-COLUMN DASHBOARD LAYOUT ==================== */
+.adm-dash-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+/* ==================== RECENT ACTIVITY LIST ==================== */
+.akt-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.akt-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--pnj-line);
+}
+
+.akt-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.akt-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.akt-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.akt-tipe {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--pnj-text);
+}
+
+.akt-sub {
+  font-size: 0.88rem;
+  color: var(--pnj-muted);
+  margin-top: 2px;
+  word-break: break-word;
+}
+
+.akt-waktu {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--pnj-muted);
+  white-space: nowrap;
+}
+
+/* ==================== QUICK SHORTCUTS CARD ==================== */
+.adm-quick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.adm-quick-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: #F9FAFB;
+  border: 1px solid var(--pnj-line);
+  color: var(--pnj-text);
+  font-weight: 600;
+  font-size: 0.92rem;
+  text-decoration: none;
+  transition: all 0.18s ease;
+}
+
+.adm-quick-link:hover {
+  background: #FFFFFF;
+  border-color: var(--pnj-accent);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  color: var(--pnj-accent);
+  text-decoration: none;
+  transform: translateX(3px);
+}
+
+.adm-quick-link svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ==================== CATEGORY GRID (Kelola Kategori) ==================== */
+.kat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.kat-card {
+  background: var(--pnj-surface);
+  border-radius: var(--pnj-radius);
+  box-shadow: var(--pnj-shadow);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.kat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.09);
+}
+
+.kat-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.kat-icon-box {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: #EBF3FF;
+  color: #012CED;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.kat-icon-box svg {
+  width: 28px;
+  height: 28px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.kat-title-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.kat-nama {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--pnj-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kat-kode {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--pnj-muted);
+  font-family: monospace;
+  margin-top: 2px;
+}
+
+.kat-deskripsi {
+  font-size: 0.88rem;
+  color: var(--pnj-muted);
+  line-height: 1.45;
+  margin-bottom: 20px;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.kat-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid var(--pnj-line);
+}
+
+.kat-jumlah {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--pnj-ok);
+  background: #DCFCE7;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.kat-aksi {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.kat-btn-action {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: #F3F4F6;
+  color: var(--pnj-text);
+  text-decoration: none;
+}
+
+.kat-btn-action svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.kat-btn-action:hover {
+  background: #E5E7EB;
+  text-decoration: none;
+}
+
+.kat-btn-action.edit:hover {
+  background: #EBF3FF;
+  color: #012CED;
+}
+
+.kat-btn-action.hapus:hover {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+.kat-btn-action:disabled,
+.kat-btn-action.disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ==================== INFO PETUNJUK BOX ==================== */
+.adm-info-box {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-top: 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.88rem;
+  color: var(--pnj-muted);
+  line-height: 1.45;
+}
+
+.adm-info-box strong {
+  color: var(--pnj-text);
+}
+
+/* ==================== AKUN TABLE SPECIFIC ==================== */
+.user-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+}
+
+.user-toggle-btn.btn-deactivate {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+.user-toggle-btn.btn-deactivate:hover {
+  background: #FCA5A5;
+}
+
+.user-toggle-btn.btn-activate {
+  background: #DCFCE7;
+  color: #15803D;
+}
+.user-toggle-btn.btn-activate:hover {
+  background: #86EFAC;
+}
+
+.user-toggle-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+}
+
+/* Responsive adjustment for admin */
+@media (max-width: 1024px) {
+  .adm-dash-grid {
+    grid-template-columns: 1fr;
+  }
+}

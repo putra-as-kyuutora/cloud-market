@@ -1,0 +1,59 @@
+@startuml Lihat_Pesanan_Saya
+title Lihat Pesanan Saya (Pembeli)
+
+|Aktor|
+start
+:Mengakses menu
+Pesanan Saya;
+
+|Sistem|
+:Cek user adalah Pembeli
+yang login;
+
+if (Valid?) then (tidak)
+  :Redirect ke /login;
+else (ya)
+  :Ambil daftar pesanan milik
+  pembeli yang sedang login;
+  
+  if (Ada pesanan?) then (tidak)
+    :Tampilkan empty state
+    "Belum ada pesanan.
+    Mulai belanja sekarang!";
+    :Link ke /barang;
+  else (ya)
+    :Tampilkan halaman
+    Pesanan Saya dengan:
+    - Filter tabs
+    - List kartu pesanan;
+    
+    |Aktor|
+    if (Gunakan filter?) then (ya)
+      :Klik tab filter;
+      
+      |Sistem|
+      :Reload dengan query string
+      /pesanan?status=Dikirim;
+      :Filter pesanan berdasarkan
+      status pengiriman yang dipilih;
+      :Tampilkan hasil filter;
+    else (tidak)
+      :Tampilkan semua pesanan;
+    endif
+    
+    |Aktor|
+    if (Pilih pesanan?) then (ya)
+      :Klik "Lihat Detail"
+      pada pesanan;
+      
+      |Sistem|
+      :Redirect ke
+      /pesanan/{id};
+    else (tidak)
+    endif
+  endif
+endif
+
+stop
+
+@enduml

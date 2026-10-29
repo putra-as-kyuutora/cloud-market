@@ -1,0 +1,61 @@
+@startuml Sequence_Tambah_Kategori
+title Sequence Diagram - Tambah Kategori (Admin)
+
+actor "Admin" as Admin
+boundary "Halaman Tambah Kategori" as GUI
+control "KelolaKategoriController" as Controller
+entity "Tabel Kategori" as DB
+
+Admin -> GUI: 1. Klik tombol Tambah Kategori
+activate GUI
+GUI --> Admin: 2. Redirect ke /admin/kategori/tambah\nTampilkan form dengan input Nama Kategori
+deactivate GUI
+
+Admin -> GUI: 3. Mengisi nama kategori
+activate GUI
+Admin -> GUI: 4. Menekan tombol Simpan
+GUI -> Controller: 5. Mengirim nama kategori ke controller
+activate Controller
+
+Controller -> Controller: 6. Validasi nama:\n- Tidak kosong\n- Maksimal 100 karakter\n- Tidak duplikat
+
+Controller -> DB: 7. Simpan kategori baru ke database
+activate DB
+DB --> Controller: 8. Data berhasil disimpan
+deactivate DB
+
+Controller --> GUI: 9. Kategori berhasil ditambahkan
+deactivate Controller
+GUI --> Admin: 10. Tampilkan notifikasi\n"Kategori berhasil ditambahkan"
+deactivate GUI
+
+alt Nama kosong
+    Admin -> GUI: 1a. Tidak mengisi nama kategori
+    Admin -> GUI: 2a. Menekan tombol Simpan
+    GUI -> Controller: 3a. Mengirim data ke controller
+    activate Controller
+    Controller -> Controller: 4a. Validasi dan menemukan error
+    Controller --> GUI: 5a. Nama kosong
+    deactivate Controller
+    GUI --> Admin: 6a. Tampilkan error "Nama kategori wajib diisi"
+else Nama terlalu panjang
+    Admin -> GUI: 1b. Mengisi nama > 100 karakter
+    Admin -> GUI: 2b. Menekan tombol Simpan
+    GUI -> Controller: 3b. Mengirim data ke controller
+    activate Controller
+    Controller -> Controller: 4b. Validasi dan menemukan error
+    Controller --> GUI: 5b. Nama terlalu panjang
+    deactivate Controller
+    GUI --> Admin: 6b. Tampilkan error "Maksimal 100 karakter"
+else Nama duplikat
+    Admin -> GUI: 1c. Mengisi nama yang sudah ada
+    Admin -> GUI: 2c. Menekan tombol Simpan
+    GUI -> Controller: 3c. Mengirim data ke controller
+    activate Controller
+    Controller -> Controller: 4c. Validasi dan menemukan duplikat
+    Controller --> GUI: 5c. Nama sudah ada
+    deactivate Controller
+    GUI --> Admin: 6c. Tampilkan error "Kategori sudah ada"
+end
+
+@enduml

@@ -1,0 +1,56 @@
+@startuml Lihat_Riwayat_Chat
+title Lihat Riwayat Chat (Pembeli/Penjual)
+
+|Aktor|
+start
+:Mengakses menu Pesan
+atau URL /pesan;
+
+|Sistem|
+:Cek user sudah login;
+
+if (Login?) then (tidak)
+  :Redirect ke /login;
+else (ya)
+  :Ambil daftar partner chat
+  dengan riwayat percakapan user;
+  
+  if (Ada partner?) then (tidak)
+    :Tampilkan empty state
+    "Belum ada percakapan.
+    Mulai chat dengan
+    penjual atau pembeli!";
+  else (ya)
+    repeat
+      :Untuk setiap partner, ambil:
+      - Info partner (nama, foto)
+      - Pesan terakhir
+      - Unread count;
+    repeat while (Masih ada partner?) is (ya) not (tidak)
+    
+    :Tampilkan halaman Pesan
+    dengan list partner chat:
+    - Foto profil
+    - Nama partner
+    - Preview pesan terakhir
+    - Timestamp relatif
+    - Badge unread (jika > 0)
+    - Urut by pesan terbaru;
+    
+    |Aktor|
+    if (Pilih partner?) then (ya)
+      :Klik partner chat;
+      
+      |Sistem|
+      :Redirect ke
+      /pesan?partner={id};
+      :Tandai pesan dari partner
+      sebagai sudah dibaca;
+    else (tidak)
+    endif
+  endif
+endif
+
+stop
+
+@enduml

@@ -1,0 +1,71 @@
+@startuml Sequence_Hapus_Barang
+title Sequence Diagram - Hapus Barang (Penjual)
+
+actor "Penjual" as Penjual
+boundary "Halaman Konfirmasi Hapus" as GUI
+control "HapusBarangController" as Controller
+entity "Tabel Barang" as DB_Barang
+entity "Tabel Transaksi" as DB_Transaksi
+
+Penjual -> GUI: 1. Klik tombol Hapus pada barang
+activate GUI
+GUI -> Controller: 2. Request konfirmasi hapus barang
+activate Controller
+
+Controller -> DB_Barang: 3. Ambil data barang dan cek ownership
+activate DB_Barang
+DB_Barang --> Controller: 4. Data barang ditemukan
+deactivate DB_Barang
+
+Controller -> DB_Transaksi: 5. Cek apakah ada transaksi aktif\nuntuk barang ini
+activate DB_Transaksi
+DB_Transaksi --> Controller: 6. Tidak ada transaksi aktif
+deactivate DB_Transaksi
+
+Controller --> GUI: 7. Data barang valid untuk dihapus
+deactivate Controller
+GUI --> Penjual: 8. Tampilkan konfirmasi:\n"Yakin hapus '{namaBarang}'?\nData tidak dapat dikembalikan"
+deactivate GUI
+
+Penjual -> GUI: 9. Klik tombol Hapus
+activate GUI
+GUI -> Controller: 10. Request hapus barang
+activate Controller
+
+Controller -> Controller: 11. Hapus foto barang dari /uploads/barang/
+
+Controller -> DB_Barang: 12. Hapus record barang dari database
+activate DB_Barang
+DB_Barang --> Controller: 13. Data berhasil dihapus
+deactivate DB_Barang
+
+Controller --> GUI: 14. Hapus berhasil
+deactivate Controller
+GUI --> Penjual: 15. Tampilkan notifikasi\n"Barang berhasil dihapus"
+deactivate GUI
+
+alt Barang tidak ditemukan atau bukan milik penjual
+    Penjual -> GUI: 1a. Klik hapus barang milik orang lain
+    GUI -> Controller: 2a. Request konfirmasi hapus
+    activate Controller
+    Controller -> DB_Barang: 3a. Cek data barang dan ownership
+    activate DB_Barang
+    DB_Barang --> Controller: 4a. Barang tidak ditemukan atau bukan milik penjual
+    deactivate DB_Barang
+    Controller --> GUI: 5a. Error 404
+    deactivate Controller
+    GUI --> Penjual: 6a. Tampilkan error 404
+else Ada transaksi aktif
+    Penjual -> GUI: 1b. Klik hapus barang yang memiliki pesanan aktif
+    GUI -> Controller: 2b. Request konfirmasi hapus
+    activate Controller
+    Controller -> DB_Transaksi: 3b. Cek transaksi aktif
+    activate DB_Transaksi
+    DB_Transaksi --> Controller: 4b. Ditemukan transaksi aktif
+    deactivate DB_Transaksi
+    Controller --> GUI: 5b. Barang tidak dapat dihapus
+    deactivate Controller
+    GUI --> Penjual: 6b. Tampilkan warning\n"Tidak dapat hapus. Masih ada {X} pesanan aktif"
+end
+
+@enduml

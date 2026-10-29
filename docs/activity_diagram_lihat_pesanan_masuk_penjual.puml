@@ -1,0 +1,58 @@
+@startuml Lihat_Pesanan_Masuk_Penjual
+title Lihat Pesanan Masuk (Penjual)
+
+|Aktor|
+start
+:Mengakses menu
+Pesanan Masuk;
+
+|Sistem|
+:Cek user adalah
+Penjual approved;
+
+if (Valid?) then (tidak)
+  :Tampilkan error 403;
+else (ya)
+  :Ambil semua pesanan yang berisi
+  barang milik penjual ini;
+  
+  if (Ada pesanan?) then (tidak)
+    :Tampilkan empty state
+    "Belum ada pesanan masuk.
+    Promosikan produk Anda!";
+  else (ya)
+    :Tampilkan halaman
+    Pesanan Masuk dengan:
+    - Filter tabs
+    - Tabel pesanan;
+    
+    |Aktor|
+    if (Gunakan filter?) then (ya)
+      :Klik tab filter;
+      
+      |Sistem|
+      :Reload /penjual/pesanan
+      ?status=Menunggu+Konfirmasi;
+      :Filter pesanan berdasarkan
+      status yang dipilih;
+      :Tampilkan hasil filter;
+    else (tidak)
+      :Tampilkan semua pesanan;
+    endif
+    
+    |Aktor|
+    if (Pilih pesanan?) then (ya)
+      :Klik "Lihat Detail"
+      pada pesanan;
+      
+      |Sistem|
+      :Redirect ke
+      /penjual/pesanan/{id};
+    else (tidak)
+    endif
+  endif
+endif
+
+stop
+
+@enduml

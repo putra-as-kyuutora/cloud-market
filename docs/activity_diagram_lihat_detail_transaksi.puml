@@ -1,0 +1,79 @@
+@startuml Lihat_Detail_Transaksi
+title Lihat Status Transaksi Detail (Pembeli)
+
+|Aktor|
+start
+:Klik "Lihat Detail"
+pada pesanan di list;
+
+|Sistem|
+:Redirect ke /pesanan/{id};
+:Ambil data lengkap transaksi:
+- Data transaksi
+- Detail item + info barang
+- Informasi penjual;
+
+if (Transaksi milik pembeli?) then (tidak)
+  :Tampilkan error 404;
+else (ya)
+  :Tampilkan halaman
+  detail pesanan dengan:
+  - No Pesanan & Tanggal
+  - Status badges
+  - Timeline tracking visual
+  - Tabel item pesanan
+  - Total pembayaran
+  - Alamat pengiriman
+  - Metode pembayaran
+  - Preview bukti bayar
+  - Info penjual;
+  
+  :Tentukan tombol aksi
+  berdasarkan status;
+  
+  if (Status = Menunggu Pembayaran?) then (ya)
+    :Tampilkan tombol
+    "Bayar Sekarang" &
+    "Batalkan Pesanan";
+  endif
+  
+  if (Status = Ditolak?) then (ya)
+    :Tampilkan alasan penolakan;
+    :Tombol "Upload Bukti Baru" &
+    "Batalkan Pesanan";
+  endif
+  
+  if (Status = Dikirim?) then (ya)
+    :Tampilkan nomor resi;
+    :Tombol "Konfirmasi Diterima";
+  endif
+  
+  if (Status = Selesai
+  OR Dibatalkan?) then (ya)
+    :Tidak ada tombol aksi;
+    :Status final;
+  endif
+  
+  :Tombol "Hubungi Penjual"
+  selalu tersedia;
+  
+  |Aktor|
+  if (Pilih aksi?) then (Bayar)
+    |Sistem|
+    :Redirect ke
+    /pesanan/{id}/bayar;
+  else if (Konfirmasi Terima) then (Konfirmasi)
+    |Sistem|
+    :Redirect ke flow
+    konfirmasi terima;
+  else if (Hubungi) then (Hubungi)
+    |Sistem|
+    :Redirect ke
+    /pesan?partner={idPenjual};
+  else (Lihat saja)
+  endif
+endif
+
+stop
+
+@enduml

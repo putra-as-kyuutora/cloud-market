@@ -1,0 +1,24 @@
+@startuml Sequence_Logout
+title Sequence Diagram - Logout
+
+actor "User" as User
+boundary "Navbar/Menu" as GUI
+control "LogoutController" as Controller
+entity "Session Data" as Session
+
+User -> GUI: 1. Klik tombol/menu Logout
+activate GUI
+GUI -> Controller: 2. Request logout ke controller
+activate Controller
+
+Controller -> Session: 3. Hapus semua session data
+activate Session
+Session --> Controller: 4. Session dihapus
+deactivate Session
+
+Controller --> GUI: 5. Logout berhasil
+deactivate Controller
+GUI --> User: 6. Redirect ke halaman login atau beranda
+deactivate GUI
+
+@enduml

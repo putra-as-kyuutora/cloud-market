@@ -1,0 +1,43 @@
+@startuml Lihat_Daftar_Kategori
+title Lihat Daftar Kategori (Admin)
+
+|Aktor|
+start
+:Mengakses menu
+Kelola Kategori;
+
+|Sistem|
+:Cek user adalah Admin;
+
+if (Admin?) then (tidak)
+  :Tampilkan error 403;
+else (ya)
+  :Ambil daftar kategori beserta
+  jumlah barang di setiap kategori;
+  
+  :Tampilkan halaman
+  Kelola Kategori dengan:
+  - Tombol Tambah Kategori
+  - Tabel kategori (nama,
+    jumlah barang, aksi);
+  
+  |Aktor|
+  if (Pilih aksi?) then (Tambah)
+    |Sistem|
+    :Redirect ke
+    /admin/kategori/tambah;
+  else if (Edit) then (Edit)
+    |Sistem|
+    :Redirect ke
+    /admin/kategori/{id}/edit;
+  else if (Hapus) then (Hapus)
+    |Sistem|
+    :Redirect ke
+    halaman konfirmasi hapus;
+  else (Lihat saja)
+  endif
+endif
+
+stop
+
+@enduml

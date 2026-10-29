@@ -1,0 +1,68 @@
+@startuml Upload_Bukti_Bayar
+title Upload Bukti Pembayaran (Pembeli)
+
+|Aktor|
+start
+:Membuka halaman
+pembayaran pesanan
+/pesanan/{id}/bayar;
+
+|Sistem|
+:Ambil data transaksi
+dari database;
+
+if (Transaksi ditemukan?) then (tidak)
+  :Tampilkan error 404
+  "Pesanan tidak ditemukan";
+else (ya)
+  :Cek statusPembayaran;
+  
+  if (Status valid untuk upload?) then (tidak)
+    :Tampilkan info
+    "Pesanan sudah dibayar
+    atau tidak dapat upload";
+  else (ya)
+    :Tampilkan halaman pembayaran:
+    - Detail pesanan & total
+    - Info rekening/QRIS
+    - Form upload bukti
+    - Tombol Batal;
+    
+    |Aktor|
+    :Melakukan transfer
+    ke rekening tujuan;
+    
+    repeat
+      :Upload foto bukti transfer;
+      
+      |Sistem|
+      :Validasi file
+      (format, ukuran, MIME);
+      
+      if (File valid?) is (tidak) then
+        :Tampilkan error
+        "Format harus JPG/PNG,
+        maksimal 2MB";
+      endif
+    repeat while (File valid?) is (tidak) not (ya)
+    
+    |Aktor|
+    :Menekan tombol
+    Kirim Bukti Pembayaran;
+    
+    |Sistem|
+    :Simpan file ke
+    /uploads/bukti/
+    dengan nama random;
+    :Set status pembayaran = 'Menunggu Konfirmasi'
+    dan simpan path bukti transfer;
+    :Tampilkan notifikasi
+    "Bukti pembayaran berhasil
+    dikirim. Menunggu konfirmasi
+    penjual";
+  endif
+endif
+
+stop
+
+@enduml

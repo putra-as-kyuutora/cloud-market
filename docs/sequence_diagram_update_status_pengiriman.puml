@@ -1,0 +1,75 @@
+@startuml Sequence_Update_Status_Pengiriman
+title Sequence Diagram - Update Status Pengiriman (Penjual)
+
+actor "Penjual" as Penjual
+boundary "Halaman Detail Pesanan" as GUI
+control "PesananController" as Controller
+entity "Tabel Transaksi" as DB
+
+Penjual -> GUI: 1. Membuka detail pesanan\ndengan status 'Sudah Dibayar'
+activate GUI
+GUI -> Controller: 2. Request detail pesanan
+activate Controller
+
+Controller -> DB: 3. Query data pesanan
+activate DB
+DB --> Controller: 4. Data ditemukan
+deactivate DB
+
+Controller -> Controller: 5. Cek status: statusPembayaran = 'Sudah Dibayar'\nAND statusPengiriman = 'Belum Dikirim'
+
+Controller --> GUI: 6. Status valid untuk update pengiriman
+deactivate Controller
+GUI --> Penjual: 7. Tampilkan tombol\n"Update Status Pengiriman"
+deactivate GUI
+
+Penjual -> Penjual: 8. Packing barang dan serahkan ke kurir/ekspedisi
+
+Penjual -> GUI: 9. Klik tombol "Update Status Pengiriman"
+activate GUI
+GUI --> Penjual: 10. Tampilkan modal dengan form:\n- Input nomor resi (opsional)\n- Checkbox konfirmasi
+deactivate GUI
+
+Penjual -> GUI: 11. Mengisi nomor resi (jika ada)
+activate GUI
+Penjual -> GUI: 12. Centang checkbox konfirmasi
+Penjual -> GUI: 13. Klik tombol Kirim
+GUI -> Controller: 14. Mengirim data pengiriman ke controller
+activate Controller
+
+Controller -> Controller: 15. Validasi checkbox tercentang
+Controller -> Controller: 16. Validasi transaksi, ownership, dan status
+
+Controller -> DB: 17. Set status pengiriman = 'Dikirim'\ndan simpan nomor resi (jika ada)
+activate DB
+DB --> Controller: 18. Status berhasil diperbarui
+deactivate DB
+
+Controller --> GUI: 19. Update berhasil
+deactivate Controller
+GUI --> Penjual: 20. Tampilkan notifikasi\n"Status diupdate. Pembeli dapat track dengan resi: {resi}"\natau "Status diupdate" (jika tanpa resi)
+deactivate GUI
+
+alt Status tidak valid untuk update
+    Penjual -> GUI: 1a. Akses pesanan dengan status selain 'Sudah Dibayar'
+    GUI -> Controller: 2a. Request detail pesanan
+    activate Controller
+    Controller -> DB: 3a. Query data pesanan
+    activate DB
+    DB --> Controller: 4a. Status tidak valid
+    deactivate DB
+    Controller --> GUI: 5a. Status tidak valid
+    deactivate Controller
+    GUI --> Penjual: 6a. Tidak tampilkan tombol "Update Status Pengiriman"
+else Checkbox tidak tercentang
+    Penjual -> GUI: 1b. Tidak centang checkbox konfirmasi
+    Penjual -> GUI: 2b. Klik tombol Kirim
+    GUI -> Controller: 3b. Mengirim data ke controller
+    activate Controller
+    Controller -> Controller: 4b. Validasi dan menemukan checkbox tidak tercentang
+    Controller --> GUI: 5b. Validasi gagal
+    deactivate Controller
+    GUI --> Penjual: 6b. Tampilkan error\n"Centang konfirmasi bahwa barang sudah dikirim"
+end
+
+@enduml

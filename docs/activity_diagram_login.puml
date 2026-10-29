@@ -1,0 +1,36 @@
+@startuml Login
+title Login
+
+|Aktor|
+start
+
+repeat
+  :Mengisi username/email
+  dan password;
+  
+  |Sistem|
+  :Sistem mengecek inputan
+  aktor;
+repeat while (Valid?) is (tidak) not (ya)
+
+|Sistem|
+:Sistem mengecek kredensial
+di database;
+
+if (Akun ditemukan?) then (tidak)
+  :Menampilkan pesan error
+  "Akun tidak ditemukan";
+else (ya)
+  if (Akun aktif?) then (tidak)
+    :Menampilkan pesan
+    "Akun dinonaktifkan";
+  else (ya)
+    :Membuat session user;
+    :Redirect ke dashboard
+    sesuai role;
+  endif
+endif
+
+stop
+
+@enduml

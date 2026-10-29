@@ -1,0 +1,38 @@
+@startuml Export_Laporan
+title Export Laporan (Admin)
+
+|Aktor|
+start
+:Berada di halaman
+Laporan Transaksi dengan
+filter yang sudah diterapkan;
+
+|Aktor|
+:Klik tombol
+Export ke Excel/CSV;
+
+|Sistem|
+:Ambil data transaksi
+sesuai filter saat ini;
+
+:Generate file Excel/CSV:
+- Header kolom
+- Data transaksi (row by row)
+- Format tanggal & currency
+- Total summary di bawah;
+
+:Set HTTP headers untuk download:
+Content-Type: application/
+vnd.ms-excel
+Content-Disposition: attachment;
+filename="laporan-{date}.xlsx";
+
+:Kirim file ke browser;
+
+|Aktor|
+:Browser download file
+dan simpan ke komputer;
+
+stop
+
+@enduml

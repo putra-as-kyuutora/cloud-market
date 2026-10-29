@@ -1,0 +1,58 @@
+@startuml Lihat_Detail_Barang
+title Lihat Informasi Barang Detail
+
+|Aktor|
+start
+:Klik barang dari
+hasil pencarian atau
+beranda;
+
+|Sistem|
+:Ambil data barang lengkap
+dari database;
+
+if (Barang ditemukan?) then (tidak)
+  :Tampilkan error 404
+  "Barang tidak ditemukan";
+else (ya)
+  :Tampilkan halaman detail dengan:
+  - Foto barang (besar, zoom)
+  - Nama barang
+  - Harga (format rupiah)
+  - Stok tersedia
+  - Kategori (badge clickable)
+  - Deskripsi lengkap
+  - Info toko penjual
+  - Tombol aksi;
+  
+  if (Stok tersedia?) then (tidak)
+    :Badge "Stok Habis" merah;
+    :Tombol Beli disabled;
+  else (ya)
+    :Tombol "Beli Sekarang";
+    :Tombol "Nego Harga";
+  endif
+  
+  :Tombol "Hubungi Penjual";
+  
+  |Aktor|
+  if (Pilihan?) then (Beli)
+    |Sistem|
+    :Redirect ke
+    /beli/{id};
+  else if (Nego) then (Nego)
+    |Sistem|
+    :Redirect ke
+    /pesan?partner={idPenjual}
+    &barang={id}&nego=1;
+  else if (Hubungi) then (Hubungi)
+    |Sistem|
+    :Redirect ke
+    /pesan?partner={idPenjual};
+  else (Lihat saja)
+  endif
+endif
+
+stop
+
+@enduml

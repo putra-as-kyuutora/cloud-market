@@ -1,0 +1,67 @@
+@startuml Sequence_Lihat_Pesanan_Saya
+title Sequence Diagram - Lihat Pesanan Saya (Pembeli)
+
+actor "Pembeli" as Pembeli
+boundary "Halaman Pesanan Saya" as GUI
+control "PesananController" as Controller
+entity "Tabel Transaksi" as DB
+
+Pembeli -> GUI: 1. Mengakses menu Pesanan Saya
+activate GUI
+GUI -> Controller: 2. Request list pesanan pembeli
+activate Controller
+
+Controller -> Controller: 3. Cek user adalah Pembeli yang login
+
+Controller -> DB: 4. Ambil daftar pesanan milik pembeli\nyang sedang login
+activate DB
+DB --> Controller: 5. Data pesanan ditemukan
+deactivate DB
+
+Controller --> GUI: 6. Kirim list pesanan
+deactivate Controller
+GUI --> Pembeli: 7. Tampilkan halaman Pesanan Saya dengan:\n- Filter tabs (Semua, Menunggu, Dikirim, Selesai)\n- List kartu pesanan
+deactivate GUI
+
+Pembeli -> GUI: 8. Gunakan filter (opsional)
+activate GUI
+GUI -> Controller: 9. Request pesanan dengan filter
+activate Controller
+
+Controller -> DB: 10. Filter pesanan berdasarkan\nstatus yang dipilih
+activate DB
+DB --> Controller: 11. Data pesanan filtered ditemukan
+deactivate DB
+
+Controller --> GUI: 12. Kirim hasil filter
+deactivate Controller
+GUI --> Pembeli: 13. Tampilkan hasil filter
+deactivate GUI
+
+Pembeli -> GUI: 14. Klik "Lihat Detail" pada pesanan
+activate GUI
+GUI --> Pembeli: 15. Redirect ke halaman detail pesanan
+deactivate GUI
+
+alt User tidak login
+    Pembeli -> GUI: 1a. Akses menu Pesanan Saya tanpa login
+    GUI -> Controller: 2a. Request list pesanan
+    activate Controller
+    Controller -> Controller: 3a. Cek user dan tidak login
+    Controller --> GUI: 4a. User tidak login
+    deactivate Controller
+    GUI --> Pembeli: 5a. Redirect ke halaman /login
+else Belum ada pesanan
+    Pembeli -> GUI: 1b. Akses menu Pesanan Saya (belum pernah pesan)
+    GUI -> Controller: 2b. Request list pesanan
+    activate Controller
+    Controller -> DB: 3b. Query pesanan pembeli
+    activate DB
+    DB --> Controller: 4b. Tidak ada data pesanan
+    deactivate DB
+    Controller --> GUI: 5b. List kosong
+    deactivate Controller
+    GUI --> Pembeli: 6b. Tampilkan empty state\n"Belum ada pesanan. Mulai belanja sekarang!"\ndengan link ke /barang
+end
+
+@enduml

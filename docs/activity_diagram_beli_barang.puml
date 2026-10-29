@@ -1,0 +1,62 @@
+@startuml Beli_Barang
+title Beli Barang (Checkout)
+
+|Aktor|
+start
+:Memilih barang dan
+klik tombol Beli;
+
+|Sistem|
+:Sistem cek stok barang;
+
+if (Stok tersedia?) then (tidak)
+  :Menampilkan error
+  "Stok tidak tersedia";
+else (ya)
+  :Menampilkan halaman
+  checkout dengan detail
+  barang dan alamat;
+  
+  |Aktor|
+  repeat
+    :Mengisi jumlah barang
+    yang dibeli;
+    
+    |Sistem|
+    :Sistem validasi jumlah
+    vs stok tersedia;
+    
+    if (Jumlah valid?) is (tidak) then
+      :Menampilkan error
+      "Jumlah melebihi stok";
+    endif
+  repeat while (Jumlah valid?) is (tidak) not (ya)
+  
+  |Aktor|
+  :Memilih metode pembayaran;
+  :Menekan tombol
+  Buat Pesanan;
+  
+  |Sistem|
+  :BEGIN TRANSACTION;
+  :Cek stok barang saat ini;
+  
+  if (Stok masih cukup?) then (tidak)
+    :ROLLBACK;
+    :Tampilkan error
+    "Stok habis";
+  else (ya)
+    :Kurangi stok barang
+    sesuai jumlah pembelian;
+    :Simpan data transaksi dengan
+    status 'Menunggu Pembayaran';
+    :Simpan detail item pesanan;
+    :COMMIT;
+    :Redirect ke halaman
+    pembayaran;
+  endif
+endif
+
+stop
+
+@enduml

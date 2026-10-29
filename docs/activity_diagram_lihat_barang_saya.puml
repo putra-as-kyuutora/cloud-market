@@ -1,0 +1,49 @@
+@startuml Lihat_Barang_Saya
+title Lihat Barang Saya (Penjual)
+
+|Aktor|
+start
+:Mengakses menu
+Barang Saya;
+
+|Sistem|
+:Cek apakah user
+adalah Penjual approved;
+
+if (Penjual approved?) then (tidak)
+  :Tampilkan error 403
+  "Akses ditolak";
+else (ya)
+  :Ambil daftar barang milik penjual
+  yang sedang login;
+  
+  if (Ada barang?) then (tidak)
+    :Tampilkan empty state
+    "Belum ada barang.
+    Tambahkan barang pertama";
+  else (ya)
+    :Tampilkan list barang dengan:
+    - Foto thumbnail
+    - Nama barang
+    - Harga
+    - Stok
+    - Status aktif/habis
+    - Tombol Edit & Hapus;
+    
+    |Aktor|
+    if (Pilih aksi?) then (Edit)
+      |Sistem|
+      :Redirect ke
+      /penjual/barang/{id}/edit;
+    else if (Hapus) then (Hapus)
+      |Sistem|
+      :Redirect ke
+      halaman konfirmasi hapus;
+    else (Lihat saja)
+    endif
+  endif
+endif
+
+stop
+
+@enduml

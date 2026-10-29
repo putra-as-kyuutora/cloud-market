@@ -1,0 +1,101 @@
+@startuml Sequence_Beli_Barang
+title Sequence Diagram - Beli Barang (Checkout)
+
+actor "Pembeli" as Pembeli
+boundary "Halaman Checkout" as GUI
+control "BeliBarangController" as Controller
+entity "Tabel Barang" as DB_Barang
+entity "Tabel Transaksi" as DB_Transaksi
+entity "Tabel DetailTransaksi" as DB_Detail
+
+Pembeli -> GUI: 1. Memilih barang dan klik tombol Beli
+activate GUI
+GUI -> Controller: 2. Request halaman checkout
+activate Controller
+
+Controller -> DB_Barang: 3. Cek stok barang
+activate DB_Barang
+DB_Barang --> Controller: 4. Stok tersedia
+deactivate DB_Barang
+
+Controller --> GUI: 5. Kirim data barang dan form checkout
+deactivate Controller
+GUI --> Pembeli: 6. Tampilkan halaman checkout dengan\ndetail barang dan alamat
+deactivate GUI
+
+Pembeli -> GUI: 7. Mengisi jumlah barang yang dibeli
+activate GUI
+Pembeli -> GUI: 8. Memilih metode pembayaran
+Pembeli -> GUI: 9. Menekan tombol Buat Pesanan
+GUI -> Controller: 10. Mengirim data pesanan ke controller
+activate Controller
+
+Controller -> Controller: 11. Validasi jumlah vs stok tersedia
+
+Controller -> DB_Barang: 12. BEGIN TRANSACTION
+activate DB_Barang
+Controller -> DB_Barang: 13. Cek stok barang saat ini
+DB_Barang --> Controller: 14. Stok masih cukup
+
+Controller -> DB_Barang: 15. Kurangi stok barang sesuai jumlah pembelian
+DB_Barang --> Controller: 16. Stok berhasil dikurangi
+deactivate DB_Barang
+
+Controller -> DB_Transaksi: 17. Simpan data transaksi dengan\nstatus 'Menunggu Pembayaran'
+activate DB_Transaksi
+DB_Transaksi --> Controller: 18. Transaksi berhasil disimpan
+deactivate DB_Transaksi
+
+Controller -> DB_Detail: 19. Simpan detail item pesanan
+activate DB_Detail
+DB_Detail --> Controller: 20. Detail pesanan berhasil disimpan
+deactivate DB_Detail
+
+Controller -> DB_Barang: 21. COMMIT
+activate DB_Barang
+DB_Barang --> Controller: 22. Transaction committed
+deactivate DB_Barang
+
+Controller --> GUI: 23. Pesanan berhasil dibuat
+deactivate Controller
+GUI --> Pembeli: 24. Redirect ke halaman pembayaran
+deactivate GUI
+
+alt Stok tidak tersedia
+    Pembeli -> GUI: 1a. Klik beli barang yang stoknya habis
+    GUI -> Controller: 2a. Request checkout
+    activate Controller
+    Controller -> DB_Barang: 3a. Cek stok barang
+    activate DB_Barang
+    DB_Barang --> Controller: 4a. Stok tidak tersedia
+    deactivate DB_Barang
+    Controller --> GUI: 5a. Stok habis
+    deactivate Controller
+    GUI --> Pembeli: 6a. Menampilkan error "Stok tidak tersedia"
+else Jumlah melebihi stok
+    Pembeli -> GUI: 1b. Mengisi jumlah yang melebihi stok
+    Pembeli -> GUI: 2b. Menekan tombol Buat Pesanan
+    GUI -> Controller: 3b. Mengirim data pesanan
+    activate Controller
+    Controller -> Controller: 4b. Validasi dan menemukan jumlah > stok
+    Controller --> GUI: 5b. Jumlah tidak valid
+    deactivate Controller
+    GUI --> Pembeli: 6b. Menampilkan error "Jumlah melebihi stok"
+else Stok habis saat transaction
+    Pembeli -> GUI: 1c. Beli barang (stok masih ada saat cek awal)
+    GUI -> Controller: 2c. Proses checkout
+    activate Controller
+    Controller -> DB_Barang: 3c. BEGIN TRANSACTION dan cek stok
+    activate DB_Barang
+    DB_Barang --> Controller: 4c. Stok habis (dibeli user lain)
+    deactivate DB_Barang
+    Controller -> DB_Barang: 5c. ROLLBACK
+    activate DB_Barang
+    DB_Barang --> Controller: 6c. Rollback success
+    deactivate DB_Barang
+    Controller --> GUI: 7c. Stok habis
+    deactivate Controller
+    GUI --> Pembeli: 8c. Tampilkan error "Stok habis"
+end
+
+@enduml

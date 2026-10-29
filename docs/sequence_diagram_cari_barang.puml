@@ -1,0 +1,50 @@
+@startuml Sequence_Cari_Barang
+title Sequence Diagram - Cari Barang
+
+actor "User" as User
+boundary "Halaman Cari Barang" as GUI
+control "CariBarangController" as Controller
+entity "Tabel Barang" as DB
+
+User -> GUI: 1. Mengakses halaman pencarian barang
+activate GUI
+GUI --> User: 2. Tampilkan halaman dengan form pencarian\ndan filter
+deactivate GUI
+
+User -> GUI: 3. Mengisi keyword pencarian
+activate GUI
+User -> GUI: 4. Memilih filter (kategori, harga, urutan)
+User -> GUI: 5. Klik tombol Cari
+GUI -> Controller: 6. Mengirim keyword dan filter ke controller
+activate Controller
+
+Controller -> DB: 7. Query barang berdasarkan keyword dan filter
+activate DB
+DB --> Controller: 8. Data barang ditemukan
+deactivate DB
+
+Controller --> GUI: 9. Kirim hasil pencarian
+deactivate Controller
+GUI --> User: 10. Tampilkan grid barang hasil pencarian
+deactivate GUI
+
+User -> GUI: 11. Klik salah satu barang
+activate GUI
+GUI --> User: 12. Redirect ke halaman detail barang
+deactivate GUI
+
+alt Tidak ada hasil pencarian
+    User -> GUI: 1a. Mengisi keyword yang tidak ada barangnya
+    User -> GUI: 2a. Klik tombol Cari
+    GUI -> Controller: 3a. Mengirim keyword ke controller
+    activate Controller
+    Controller -> DB: 4a. Query barang
+    activate DB
+    DB --> Controller: 5a. Tidak ada data ditemukan
+    deactivate DB
+    Controller --> GUI: 6a. Hasil kosong
+    deactivate Controller
+    GUI --> User: 7a. Tampilkan pesan\n"Tidak ada barang yang sesuai dengan pencarian"
+end
+
+@enduml

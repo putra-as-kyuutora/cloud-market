@@ -1,0 +1,87 @@
+@startuml Edit_Data_Pribadi
+title Edit Data Pribadi (Profil)
+
+|Aktor|
+start
+:Mengakses menu Profil
+atau Edit Data Pribadi;
+
+|Sistem|
+:Cek user sudah login;
+
+if (Login?) then (tidak)
+  :Redirect ke /login;
+else (ya)
+  :Ambil data user saat ini
+dari database;
+  
+  :Tampilkan form edit profil
+  (pre-filled dengan data saat ini);
+  
+  |Aktor|
+  repeat
+    :Mengubah data yang
+    ingin diupdate;
+    
+    |Sistem|
+    :Validasi inputan;
+    
+    if (Valid?) is (tidak) then
+      :Tampilkan error
+      field yang tidak valid;
+    endif
+  repeat while (Valid?) is (tidak) not (ya)
+  
+  if (Ubah password?) then (ya)
+    repeat
+      :Mengisi password lama;
+      
+      |Sistem|
+      :Validasi password lama;
+      
+      if (Password lama benar?) is (tidak) then
+        :Tampilkan error
+        "Password lama salah";
+      endif
+    repeat while (Password lama benar?) is (tidak) not (ya)
+    
+    repeat
+      :Mengisi password baru
+      dan konfirmasi;
+      
+      |Sistem|
+      :Validasi password baru
+      (min 6 karakter, match);
+      
+      if (Password baru valid?) is (tidak) then
+        :Tampilkan error
+        "Password tidak sesuai
+        atau terlalu pendek";
+      endif
+    repeat while (Password baru valid?) is (tidak) not (ya)
+    
+    |Sistem|
+    :Hash password baru
+    dengan bcrypt;
+  else (tidak)
+    :Password tidak diubah;
+  endif
+  
+  |Aktor|
+  :Menekan tombol
+  Simpan Perubahan;
+  
+  |Sistem|
+  :Simpan perubahan data user
+  ke database;
+  
+  :Simpan password baru (jika diubah)
+  dengan hash bcrypt;
+  
+  :Tampilkan notifikasi
+  "Profil berhasil diperbarui";
+endif
+
+stop
+
+@enduml

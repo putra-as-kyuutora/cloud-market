@@ -1,0 +1,71 @@
+@startuml Sequence_Konfirmasi_Barang_Diterima
+title Sequence Diagram - Konfirmasi Barang Diterima (Pembeli)
+
+actor "Pembeli" as Pembeli
+boundary "Halaman Detail Pesanan" as GUI
+control "PesananController" as Controller
+entity "Tabel Transaksi" as DB
+
+Pembeli -> GUI: 1. Membuka detail pesanan\ndengan status 'Dikirim'
+activate GUI
+GUI -> Controller: 2. Request detail pesanan
+activate Controller
+
+Controller -> DB: 3. Query data pesanan
+activate DB
+DB --> Controller: 4. Data ditemukan
+deactivate DB
+
+Controller -> Controller: 5. Cek statusPengiriman = 'Dikirim'
+
+Controller --> GUI: 6. Status valid
+deactivate Controller
+GUI --> Pembeli: 7. Tampilkan tombol\n"Konfirmasi Barang Diterima"
+deactivate GUI
+
+Pembeli -> Pembeli: 8. Menerima barang secara fisik dan cek kondisi
+
+Pembeli -> GUI: 9. Klik tombol "Konfirmasi Barang Diterima"
+activate GUI
+GUI --> Pembeli: 10. Tampilkan dialog konfirmasi\n"Apakah barang sudah Anda terima dengan kondisi baik?\nTindakan ini akan menyelesaikan pesanan"
+deactivate GUI
+
+Pembeli -> GUI: 11. Klik Ya, Sudah Diterima
+activate GUI
+GUI -> Controller: 12. Request konfirmasi terima barang
+activate Controller
+
+Controller -> Controller: 13. Validasi ownership dan status
+
+Controller -> DB: 14. Set status pembayaran = 'Selesai'\ndan status pengiriman = 'Diterima'
+activate DB
+DB --> Controller: 15. Status berhasil diperbarui
+deactivate DB
+
+Controller --> GUI: 16. Konfirmasi berhasil
+deactivate Controller
+GUI --> Pembeli: 17. Tampilkan notifikasi\n"Terima kasih! Pesanan telah diselesaikan.\nKami harap Anda puas"
+deactivate GUI
+
+alt Status tidak valid
+    Pembeli -> GUI: 1a. Akses pesanan dengan status selain 'Dikirim'
+    GUI -> Controller: 2a. Request detail pesanan
+    activate Controller
+    Controller -> DB: 3a. Query data pesanan
+    activate DB
+    DB --> Controller: 4a. Status tidak valid
+    deactivate DB
+    Controller --> GUI: 5a. Status tidak valid
+    deactivate Controller
+    GUI --> Pembeli: 6a. Tidak tampilkan tombol "Konfirmasi Barang Diterima"
+else Validasi gagal
+    Pembeli -> GUI: 1b. Klik konfirmasi pada pesanan yang tidak valid
+    GUI -> Controller: 2b. Request konfirmasi terima
+    activate Controller
+    Controller -> Controller: 3b. Validasi dan menemukan error
+    Controller --> GUI: 4b. Tidak dapat konfirmasi
+    deactivate Controller
+    GUI --> Pembeli: 5b. Tampilkan error\n"Tidak dapat konfirmasi. Status: {status}"
+end
+
+@enduml

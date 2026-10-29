@@ -1,0 +1,47 @@
+@startuml Sequence_Beranda
+title Sequence Diagram - Lihat Beranda
+
+actor "User" as User
+boundary "Halaman Beranda" as GUI
+control "BerandaController" as Controller
+entity "Tabel Barang" as DB_Barang
+entity "Tabel Kategori" as DB_Kategori
+
+User -> GUI: 1. Mengakses halaman beranda / root URL
+activate GUI
+GUI -> Controller: 2. Request data beranda
+activate Controller
+
+Controller -> DB_Barang: 3. Ambil 8 barang terbaru dengan foto dan harga
+activate DB_Barang
+DB_Barang --> Controller: 4. Data barang terbaru ditemukan
+deactivate DB_Barang
+
+Controller -> DB_Kategori: 5. Ambil daftar semua kategori
+activate DB_Kategori
+DB_Kategori --> Controller: 6. Data kategori ditemukan
+deactivate DB_Kategori
+
+Controller --> GUI: 7. Kirim data barang dan kategori
+deactivate Controller
+GUI --> User: 8. Tampilkan halaman beranda dengan section:\n- Hero banner, Form pencarian quick\n- Grid kategori (clickable)\n- Grid barang terbaru, Call to action
+deactivate GUI
+
+User -> GUI: 9. Pilih aksi: Cari barang, Klik kategori,\nKlik barang, atau Login/Registrasi
+activate GUI
+
+alt User memilih Cari barang
+    GUI --> User: 1a. Redirect ke /barang
+else User klik kategori
+    GUI --> User: 1b. Redirect ke /barang?kategori={id}
+else User klik barang
+    GUI --> User: 1c. Redirect ke /barang/{id}
+else User klik Login/Registrasi
+    GUI --> User: 1d. Redirect ke halaman login atau registrasi
+else User hanya melihat
+    GUI --> User: 1e. Tetap di halaman beranda
+end
+
+deactivate GUI
+
+@enduml

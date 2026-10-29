@@ -1,0 +1,50 @@
+@startuml Hapus_Barang
+title Hapus Barang (Penjual)
+
+|Aktor|
+start
+:Klik tombol Hapus
+pada barang;
+
+|Sistem|
+:Redirect ke halaman
+konfirmasi hapus;
+:Ambil data barang
+dan cek ownership;
+
+if (Barang milik penjual?) then (tidak)
+  :Tampilkan error 404;
+else (ya)
+  :Cek apakah ada transaksi
+  aktif untuk barang ini;
+  
+  if (Ada transaksi aktif?) then (ya)
+    :Tampilkan warning
+    "Tidak dapat hapus.
+    Masih ada {X} pesanan aktif
+    untuk barang ini";
+    :Hanya tombol Kembali;
+    |Aktor|
+    :Klik Kembali;
+  else (tidak)
+    :Tampilkan konfirmasi:
+    "Yakin hapus '{namaBarang}'?
+    Data tidak dapat dikembalikan";
+    :Tombol Hapus & Batal;
+    
+    |Aktor|
+    if (Pilihan?) then (Batal)
+    else (Hapus)
+      |Sistem|
+      :Hapus foto barang dari
+      /uploads/barang/;
+      :Hapus record barang dari database;
+      :Tampilkan notifikasi
+      "Barang berhasil dihapus";
+    endif
+  endif
+endif
+
+stop
+
+@enduml

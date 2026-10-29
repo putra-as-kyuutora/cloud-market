@@ -1,0 +1,54 @@
+@startuml Sequence_Registrasi_Pembeli
+title Sequence Diagram - Registrasi Pembeli
+
+actor "Pembeli" as Pembeli
+boundary "Halaman Registrasi" as GUI
+control "RegistrasiController" as Controller
+entity "Tabel User" as DB
+
+Pembeli -> GUI: 1. Mengisi nomor telepon (HP), nama lengkap,\nusername, dan password
+activate GUI
+GUI -> Controller: 2. Menerima data yang dimasukkan oleh aktor
+activate Controller
+
+Pembeli -> GUI: 3. Mengisi alamat pengiriman lengkap\n(kelurahan, kecamatan, kota,\nprovinsi, dan kode pos)
+
+Pembeli -> GUI: 5. Menekan tombol "Daftar"
+GUI -> Controller: 4. Memeriksa kelengkapan dan format\ndata registrasi
+
+Controller -> Controller: 6. Memvalidasi seluruh data registrasi\ndan memeriksa ketersediaan username
+
+Controller -> DB: 7. Menyimpan data Pembeli\nke dalam basis data
+activate DB
+DB --> Controller: 
+deactivate DB
+
+Controller --> GUI: 8. Registrasi berhasil
+GUI --> Pembeli: Menampilkan notifikasi bahwa registrasi\nberhasil dan akun telah dibuat
+deactivate Controller
+deactivate GUI
+
+alt Data tidak sesuai format atau tidak lengkap
+    Pembeli -> GUI: 1a. Pembeli memasukkan data yang tidak sesuai\nformat atau tidak lengkap
+    Pembeli -> GUI: 2a. Menekan tombol "Daftar"
+    GUI -> Controller: 3a. Mengirim data ke controller
+    activate Controller
+    Controller -> Controller: 4a. Validasi data dan menemukan kesalahan
+    Controller --> GUI: 5a. Mengirim pesan error validasi
+    deactivate Controller
+    GUI --> Pembeli: 6a. Menampilkan pesan kesalahan dan\nmeminta aktor memperbaiki data
+else Username sudah digunakan
+    Pembeli -> GUI: 1b. Pembeli memasukkan username yang sudah ada
+    Pembeli -> GUI: 2b. Menekan tombol "Daftar"
+    GUI -> Controller: 3b. Mengirim data ke controller
+    activate Controller
+    Controller -> DB: 4b. Cek ketersediaan username
+    activate DB
+    DB --> Controller: 5b. Username sudah digunakan
+    deactivate DB
+    Controller --> GUI: 6b. Username telah digunakan
+    deactivate Controller
+    GUI --> Pembeli: 7b. Menampilkan pesan bahwa username\ntelah digunakan dan meminta aktor\nmenggunakan username lain
+end
+
+@enduml

@@ -1,0 +1,56 @@
+@startuml Lihat_Inbox_Pesan
+title Lihat Inbox Pesan Masuk
+
+|Aktor|
+start
+:Melihat badge notifikasi
+angka merah di icon Pesan
+di navbar;
+
+|Sistem|
+:Hitung jumlah pesan
+yang belum dibaca;
+
+if (Count > 0?) then (ya)
+  :Tampilkan badge merah
+  dengan angka unread;
+else (tidak)
+  :Tidak tampilkan badge;
+endif
+
+|Aktor|
+:Klik icon Pesan
+atau menu Inbox;
+
+|Sistem|
+:Redirect ke /pesan/inbox;
+:Ambil daftar pesan yang
+belum dibaca oleh user;
+
+if (Ada pesan unread?) then (tidak)
+  :Tampilkan empty state
+  "Tidak ada pesan baru.
+  Semua pesan sudah dibaca";
+  :Link "Lihat Semua Percakapan"
+  ke /pesan;
+else (ya)
+  :Tampilkan halaman Inbox:
+  - Header dengan badge count
+  - List pesan unread;
+  
+  |Aktor|
+  if (Pilih pesan?) then (ya)
+    :Klik salah satu pesan;
+    
+    |Sistem|
+    :Redirect ke
+    /pesan?partner={idPengirim};
+    :Tandai pesan sebagai sudah dibaca;
+    :Badge count berkurang;
+  else (tidak)
+  endif
+endif
+
+stop
+
+@enduml

@@ -1,0 +1,35 @@
+# ==========================================
+# CLOUD MARKET - GIT IGNORE
+# ==========================================
+
+# File Upload Pengguna (KTP & Bukti Transfer Sensitif)
+public/uploads/ktp/*
+!public/uploads/ktp/.gitkeep
+
+public/uploads/bukti/*
+!public/uploads/bukti/.gitkeep
+
+# File Upload Produk (Opsional: biarkan default/sample jika dibutuhkan)
+# public/uploads/barang/*
+# !public/uploads/barang/.gitkeep
+
+# Environment & Konfigurasi Lokal
+# config/config.local.php
+.env
+
+# Editor & IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS Cache
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Temporary & Logs
+*.log
+scratch/
+tmp/
+

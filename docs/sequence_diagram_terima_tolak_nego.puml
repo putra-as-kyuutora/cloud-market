@@ -1,0 +1,62 @@
+@startuml Sequence_Terima_Tolak_Nego
+title Sequence Diagram - Terima/Tolak Tawaran Nego (Penjual)
+
+actor "Penjual" as Penjual
+boundary "Halaman Chat dengan Bubble Nego" as GUI
+control "PesanController" as Controller
+entity "Tabel Nego" as DB_Nego
+entity "Tabel Pesan" as DB_Pesan
+
+Penjual -> GUI: 1. Membuka chat dan melihat pesan nego\ndengan tombol Terima/Tolak
+activate GUI
+GUI --> Penjual: 2. Tampilkan bubble nego khusus dengan:\n- Info barang & tawaran\n- Tombol "Terima Tawaran" (hijau)\n- Tombol "Tolak Tawaran" (merah)
+deactivate GUI
+
+Penjual -> Penjual: 3. Memeriksa harga tawaran
+
+Penjual -> GUI: 4. Klik tombol "Terima Tawaran"
+activate GUI
+GUI --> Penjual: 5. Tampilkan dialog konfirmasi\n"Terima tawaran Rp {hargaNego} untuk {namaBarang}?"
+deactivate GUI
+
+Penjual -> GUI: 6. Klik Ya, Terima
+activate GUI
+GUI -> Controller: 7. Request terima tawaran
+activate Controller
+
+Controller -> DB_Nego: 8. Set status tawaran menjadi 'diterima'\ndan simpan harga kesepakatan
+activate DB_Nego
+DB_Nego --> Controller: 9. Status berhasil diperbarui
+deactivate DB_Nego
+
+Controller -> DB_Pesan: 10. Kirim pesan otomatis:\n"✅ Tawaran Anda diterima!\nHarga Rp {hargaNego} berlaku untuk pembelian ini"
+activate DB_Pesan
+DB_Pesan --> Controller: 11. Pesan berhasil disimpan
+deactivate DB_Pesan
+
+Controller -> Controller: 12. Generate link checkout dengan harga nego:\n/beli/{idBarang}?nego={idNego}
+
+Controller --> GUI: 13. Tawaran berhasil diterima
+deactivate Controller
+GUI --> Penjual: 14. Tampilkan notifikasi "Tawaran diterima"\nTombol Terima/Tolak hilang
+deactivate GUI
+
+alt Penjual menolak tawaran
+    Penjual -> Penjual: 1a. Memeriksa dan tidak setuju dengan tawaran
+    Penjual -> GUI: 2a. Klik tombol "Tolak Tawaran"
+    GUI -> Controller: 3a. Request tolak tawaran
+    activate Controller
+    Controller -> DB_Nego: 4a. Set status tawaran menjadi 'ditolak'
+    activate DB_Nego
+    DB_Nego --> Controller: 5a. Status berhasil diperbarui
+    deactivate DB_Nego
+    Controller -> DB_Pesan: 6a. Kirim pesan otomatis:\n"❌ Tawaran Anda ditolak.\nSilakan ajukan tawaran lain atau beli dengan harga normal"
+    activate DB_Pesan
+    DB_Pesan --> Controller: 7a. Pesan berhasil disimpan
+    deactivate DB_Pesan
+    Controller --> GUI: 8a. Tawaran berhasil ditolak
+    deactivate Controller
+    GUI --> Penjual: 9a. Tampilkan notifikasi "Tawaran ditolak"\nTombol Terima/Tolak hilang
+end
+
+@enduml

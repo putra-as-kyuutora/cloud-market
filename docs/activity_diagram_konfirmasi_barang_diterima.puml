@@ -1,0 +1,62 @@
+@startuml Konfirmasi_Barang_Diterima
+title Konfirmasi Barang Diterima (Pembeli)
+
+|Aktor|
+start
+:Membuka detail pesanan
+dengan status "Dikirim";
+
+|Sistem|
+:Cek statusPengiriman
+= 'Dikirim';
+
+if (Status valid?) then (tidak)
+  :Tidak tampilkan tombol
+  Konfirmasi Diterima;
+else (ya)
+  :Tampilkan tombol
+  "Konfirmasi Barang Diterima";
+  
+  |Aktor|
+  :Menerima barang secara fisik
+  dan cek kondisi;
+  
+  :Klik tombol
+  "Konfirmasi Barang Diterima";
+  
+  |Sistem|
+  :Tampilkan dialog konfirmasi
+  "Apakah barang sudah Anda
+  terima dengan kondisi baik?
+  Tindakan ini akan
+  menyelesaikan pesanan";
+  
+  |Aktor|
+  if (Pilihan?) then (Belum)
+    :Tutup dialog;
+  else (Ya, Sudah Diterima)
+    |Sistem|
+    :POST ke /pesanan/{id}
+    /konfirmasi-terima;
+    :Validasi ownership
+    dan status;
+    
+    if (Valid?) then (tidak)
+      :Tampilkan error
+      "Tidak dapat konfirmasi.
+      Status: {status}";
+    else (ya)
+      :Set status pembayaran = 'Selesai'
+      dan status pengiriman = 'Diterima';
+      
+      :Tampilkan notifikasi
+      "Terima kasih! Pesanan
+      telah diselesaikan.
+      Kami harap Anda puas";
+    endif
+  endif
+endif
+
+stop
+
+@enduml

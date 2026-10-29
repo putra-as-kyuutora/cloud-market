@@ -1,0 +1,71 @@
+@startuml Lihat_Beranda
+title Lihat Beranda (Semua User)
+
+|Aktor|
+start
+:Mengakses halaman
+beranda / root URL;
+
+|Sistem|
+:Ambil data untuk beranda:
+- 8 barang terbaru
+- Semua kategori
+- Banner/hero section;
+
+:Ambil 8 barang terbaru
+dengan foto dan harga;
+
+:Ambil daftar semua kategori;
+
+:Tampilkan halaman beranda
+dengan section:
+- Hero banner
+- Form pencarian quick
+- Grid kategori (clickable)
+- Grid barang terbaru
+- Call to action;
+
+|Aktor|
+if (User sudah login?) then (ya)
+  |Sistem|
+  :Tampilkan navbar dengan
+  menu sesuai role;
+  
+  if (Role Pembeli?) then (ya)
+    :Menu: Cari Barang, Pesanan;
+  endif
+  
+  if (Role Penjual?) then (ya)
+    :Menu: Dashboard Penjual,
+    Barang Saya, Pesanan Masuk;
+  endif
+  
+  if (Role Admin?) then (ya)
+    :Menu: Dashboard Admin;
+  endif
+else (tidak)
+  :Tampilkan navbar guest:
+  Login, Registrasi;
+endif
+
+|Aktor|
+if (Pilihan?) then (Cari barang)
+  |Sistem|
+  :Redirect ke /barang;
+else if (Klik kategori) then (Klik kategori)
+  |Sistem|
+  :Redirect ke
+  /barang?kategori={id};
+else if (Klik barang) then (Klik barang)
+  |Sistem|
+  :Redirect ke /barang/{id};
+else if (Login/Registrasi) then (Login/Registrasi)
+  |Sistem|
+  :Redirect ke halaman
+  login atau registrasi;
+else (Lihat saja)
+endif
+
+stop
+
+@enduml

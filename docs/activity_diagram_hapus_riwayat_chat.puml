@@ -1,0 +1,77 @@
+@startuml Hapus_Riwayat_Chat
+title Hapus Riwayat Chat
+
+|Aktor|
+start
+:Berada di halaman
+/pesan (daftar chat);
+
+|Sistem|
+:Tampilkan list partner chat
+dengan menu konteks (⋮)
+per item;
+
+|Aktor|
+:Klik icon ⋮ atau tombol
+hapus pada konversasi
+dengan partner tertentu;
+
+|Sistem|
+:Tampilkan menu dropdown
+dengan opsi "Hapus Chat";
+
+|Aktor|
+:Klik "Hapus Chat";
+
+|Sistem|
+:Tampilkan dialog konfirmasi
+"Hapus riwayat chat dengan
+{namaPartner}?
+Chat ini hanya akan dihapus
+dari akun Anda";
+
+|Aktor|
+if (Pilihan?) then (Batal)
+  :Tutup dialog;
+else (Hapus)
+  |Sistem|
+  :POST ke /pesan/hapus
+  dengan {partnerId};
+  
+  :Validasi user login
+  dan partner exist;
+  
+  if (Valid?) then (tidak)
+    :Tampilkan error;
+  else (ya)
+    :Cek ada riwayat chat;
+    
+    if (Tidak ada riwayat?) then (ya)
+      :Tampilkan info
+      "Tidak ada riwayat chat
+      yang perlu dihapus";
+    else (tidak)
+      :Tandai pesan sebagai dihapus
+      dari sisi user yang sedang login;
+      
+      :Sembunyikan pesan ini dari
+      list chat user saat ini;
+      
+      :Tampilkan notifikasi
+      "Riwayat chat dihapus
+      dari akun Anda";
+      
+      :Reload /pesan tanpa
+      konversasi yang dihapus;
+      
+      note right
+      Partner masih dapat
+      melihat chat dari sisinya
+      end note
+    endif
+  endif
+endif
+
+stop
+
+@enduml
